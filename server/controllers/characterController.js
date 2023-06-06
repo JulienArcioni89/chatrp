@@ -1,18 +1,21 @@
+require('dotenv').config({path: '../.env'});
+
 const express = require('express');
 const router = express.Router();
 const connection = require('../config/database');
 const {Configuration, OpenAIApi} = require('openai');
-const apiKey = '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';
+
+const apiKey = process.env.OPENAI_API_KEY;
 const configuration = new Configuration({
     apiKey: apiKey,
 });
 const openai = new OpenAIApi(configuration);
-
 // const openaiClient = new openai.OpenAIApi(apiKey);
+const { authenticateToken } = require('../middleware/auth.middleware');
 
 
-// Route pour créer un personnage dans un univers spécifié
-router.post('/game/:id', (req, res) => {
+// Créer un personnage dans un univers spécifié
+router.post('/game/:id', authenticateToken, (req, res) => {
     const {id} = req.params;
     const {nom} = req.body;
     const query = 'INSERT INTO characters (name, game_id) VALUES (?, ?)';
@@ -26,8 +29,8 @@ router.post('/game/:id', (req, res) => {
     });
 });
 
-// Route pour récupérer un personnage par son ID
-router.get('/:id', (req, res) => {
+// Récupérer un personnage par son ID
+router.get('/:id', authenticateToken, (req, res) => {
     const characterId = req.params.id;
     const query = 'SELECT * FROM characters WHERE id = ?';
     connection.query(query, [characterId], (error, results) => {
@@ -42,8 +45,8 @@ router.get('/:id', (req, res) => {
     });
 });
 
-// Route pour récupérer tous les personnages d'un univers
-router.get('/game/:id', (req, res) => {
+// Récupérer tous les personnages d'un univers
+router.get('/game/:id', authenticateToken, (req, res) => {
     const gameId = req.params.id;
     const query = 'SELECT * FROM characters WHERE game_id = ?';
     connection.query(query, [gameId], (error, results) => {
@@ -56,8 +59,8 @@ router.get('/game/:id', (req, res) => {
     });
 });
 
-// Route pour générer une description du personnage en utilisant OpenAI
-router.put('/game/:game_id/characters/:character_id', (req, res) => {
+// Générer une description du personnage en utilisant OpenAI
+router.put('/game/:game_id/characters/:character_id', authenticateToken, (req, res) => {
     const gameId = req.params.game_id;
     const characterId = req.params.character_id;
 
@@ -95,7 +98,7 @@ router.put('/game/:game_id/characters/:character_id', (req, res) => {
 });
 
 
-// Fonction pour générer la description du personnage en utilisant OpenAI
+// Générer la description du personnage en utilisant OpenAI
 async function generateCharacterDescription(characterName, gameName) {
     const prompt = `Fait moi une courte description du personnage qui s'appelle ${characterName} et qui fait partie du jeu ${gameName}.`;
 

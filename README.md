@@ -1,5 +1,9 @@
 # ChatRP
 
+## Informations générales
+
+En cours de développement - Front non fonctionnel - API Fonctionnelle
+
 ## Description
 
 ChatRP est une application de chat avec une IA qui permet aux utilisateurs de créer des personnages, les associer à un univers et de converser avec eux.
@@ -39,7 +43,7 @@ Avant de commencer, assurez-vous d'avoir installé les éléments suivants :
 
 ### Méthode 2 : Importer la base de données
 
-1. Ouvrir le fichier `openai.sql` dans un éditeur de texte.
+1. Récupérer le fichier `openai.sql` qui se situe à la racine de ce projet.
 2. Importez le fichier dans votre base de données MySQL.
 
 ---

@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const connection = require('../config/database');
+const {authenticateToken} = require("../middleware/auth.middleware");
 
-
-// Route pour créer un jeu
-    router.post('/', (req, res) => {
+// Créer un jeu
+    router.post('/', authenticateToken, (req, res) => {
         const {nom} = req.body;
         const query = 'INSERT INTO games (nom) VALUES (?)';
         connection.query(query, [nom], (error, results) => {
@@ -17,8 +17,8 @@ const connection = require('../config/database');
         });
     });
 
-// Route pour récupérer un jeu par son ID
-    router.get('/:id', (req, res) => {
+// Récupérer un jeu par son ID
+    router.get('/:id', authenticateToken, (req, res) => {
         const gameId = req.params.id;
         const query = 'SELECT * FROM games WHERE id = ?';
         connection.query(query, [gameId], (error, results) => {
@@ -33,8 +33,8 @@ const connection = require('../config/database');
         });
     });
 
-// Route pour récupérer tous les jeux
-    router.get('/', (req, res) => {
+// Récupérer tous les jeux
+    router.get('/', authenticateToken, (req, res) => {
         const query = 'SELECT * FROM games';
         connection.query(query, (error, results) => {
             if (error) {
@@ -46,8 +46,8 @@ const connection = require('../config/database');
         });
     });
 
-// Route pour renommer un jeu
-    router.put('/:id', (req, res) => {
+// Renommer un jeu
+    router.put('/:id', authenticateToken, (req, res) => {
         const gameId = req.params.id;
         const {nom} = req.body;
         const query = 'UPDATE games SET nom = ? WHERE id = ?';

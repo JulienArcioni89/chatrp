@@ -1,11 +1,13 @@
+require('dotenv').config({path: '../.env'});
+
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const connection = require('../config/database');
+const {authenticateToken} = require("../middleware/auth.middleware");
 
-// Route pour récupérer tous les utilisateurs
-function getUserController(connection) {
-    router.get('/', (req, res) => {
+    // Route pour récupérer tous les utilisateurs
+    router.get('/', authenticateToken, (req, res) => {
         // Exécute la requête SQL pour récupérer tous les utilisateurs
         const query = 'SELECT * FROM users';
         connection.query(query, (error, results) => {
@@ -19,7 +21,7 @@ function getUserController(connection) {
     });
 
     // Route pour récupérer un utilisateur par son ID
-    router.get('/:id', (req, res) => {
+    router.get('/:id', authenticateToken, (req, res) => {
         const userId = req.params.id;
         // Exécute la requête SQL pour récupérer l'utilisateur avec l'ID spécifié
         const query = 'SELECT * FROM users WHERE id = ?';
@@ -36,7 +38,7 @@ function getUserController(connection) {
     });
 
     // Route pour ajouter un utilisateur
-    router.post('/', (req, res) => {
+    router.post('/', authenticateToken, (req, res) => {
         const {nom, prenom, pwd, mail} = req.body;
         // Exécuter la requête SQL pour insérer un nouvel utilisateur
         const query = 'INSERT INTO users (nom, prenom, pwd, mail) VALUES (?, ?, ?, ?)';
@@ -51,7 +53,7 @@ function getUserController(connection) {
     });
 
     // Route pour modifier un utilisateur
-    router.put('/:id', (req, res) => {
+    router.put('/:id', authenticateToken, (req, res) => {
         const userId = req.params.id;
         const {nom, prenom, pwd, mail} = req.body;
         // Exécuter la requête SQL pour mettre à jour l'utilisateur avec l'ID spécifié
@@ -69,7 +71,7 @@ function getUserController(connection) {
     });
 
 
-// Route pour la connexion
+    // Route pour la connexion
     router.post('/login', (req, res) => {
         const { mail, pwd } = req.body;
 
@@ -87,7 +89,7 @@ function getUserController(connection) {
                 // Les informations d'identification sont valides
                 // Générer le token JWT
                 const user = results[0];
-                const token = jwt.sign({ id: user.id, mail: user.mail }, 'shjgeitZRGJBEhbirofvhedp', { expiresIn: '1h' });
+                const token = jwt.sign({ id: user.id, mail: user.mail }, process.env.SECRET_KEY, { expiresIn: '1h' });
 
                 // Renvoyer le token JWT dans la réponse
                 res.json({ token });
@@ -96,8 +98,4 @@ function getUserController(connection) {
     });
 
 
-
-    return router;
-}
-
-module.exports = getUserController;
+module.exports = router;
