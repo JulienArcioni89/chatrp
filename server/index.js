@@ -7,6 +7,7 @@ const app = express();
 const userController = require('./controllers/userController');
 const gameController = require('./controllers/gameController');
 const characterController = require('./controllers/characterController');
+const chatController = require('./controllers/chatController');
 const {authenticateToken} = require("./middleware/auth.middleware");
 
 app.use(bodyParser.json());
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use('/users', userController);
 app.use('/games', gameController);
 app.use('/characters', characterController);
+app.use('/chat', chatController);
 
 // Middleware
 app.use(authenticateToken);
