@@ -28,6 +28,7 @@ Avant de commencer, assurez-vous d'avoir installé les éléments suivants :
 4. Installez les dépendances : `npm install`
 5. Configurez la base de données : [Instructions de configuration de la base de données ci-dessous]
 6. Lancez l'API : `npm start` `index.js`
+7. Modifier le fichier `.env` avec votre clé API OpenAI
 
 ## Configuration de la base de données
 
