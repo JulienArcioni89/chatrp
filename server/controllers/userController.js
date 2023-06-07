@@ -75,8 +75,6 @@ const {authenticateToken} = require("../middleware/auth.middleware");
     router.post('/login', (req, res) => {
         const { mail, pwd } = req.body;
 
-        console.log(req.body);
-
         // Vérifier les informations d'identification dans la base de données
         const query = 'SELECT * FROM users WHERE mail = ? AND pwd = ?';
         connection.query(query, [mail, pwd], (error, results) => {
