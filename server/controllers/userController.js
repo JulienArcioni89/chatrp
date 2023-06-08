@@ -99,7 +99,7 @@ router.post('/login', (req, res) => {
         } else {
             // Générer le token JWT
             const user = results[0];
-            const token = jwt.sign({id: user.id, mail: user.mail}, process.env.SECRET_KEY, {expiresIn: '1h'});
+            const token = jwt.sign({id: user.id, mail: user.mail}, process.env.SECRET_KEY, {expiresIn: '7h'});
 
             // Renvoyer le token JWT dans la réponse
             res.json({token});
