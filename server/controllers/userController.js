@@ -38,7 +38,7 @@ const {authenticateToken} = require("../middleware/auth.middleware");
     });
 
     // Route pour ajouter un utilisateur
-    router.post('/', authenticateToken, (req, res) => {
+    router.post('/', (req, res) => {
         const {nom, prenom, pwd, mail} = req.body;
         // Exécuter la requête SQL pour insérer un nouvel utilisateur
         const query = 'INSERT INTO users (nom, prenom, pwd, mail) VALUES (?, ?, ?, ?)';
