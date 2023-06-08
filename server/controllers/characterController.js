@@ -69,6 +69,21 @@ router.post('/game/:id', authenticateToken, async (req, res) => {
     });
 });
 
+// Supprimer un personnage par son ID
+router.delete('/:id', authenticateToken, (req, res) => {
+    const characterId = req.params.id;
+    const query = 'DELETE FROM characters WHERE id = ?';
+    connection.query(query, [characterId], (error, results) => {
+        if (error) {
+            console.error('Erreur lors de la suppression du personnage :', error);
+            res.status(500).json({ error: 'Erreur lors de la suppression du personnage' });
+        } else if (results.affectedRows === 0) {
+            res.status(404).json({ error: 'Personnage non trouvé' });
+        } else {
+            res.json({ message: 'Personnage supprimé avec succès' });
+        }
+    });
+});
 
 
 // Récupérer un personnage par son ID
