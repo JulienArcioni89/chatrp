@@ -84,6 +84,23 @@ router.post('/:characterId', authenticateToken, async (req, res) => {
     });
 });
 
+// Supprimer une conversation par son ID
+router.delete('/:id', authenticateToken, (req, res) => {
+    const conversationId = req.params.id;
+    const deleteQuery = 'DELETE FROM conversation WHERE id = ?';
+    connection.query(deleteQuery, [conversationId], (error, results) => {
+        if (error) {
+            console.error('Erreur lors de la suppression de la conversation :', error);
+            res.status(500).json({ error: 'Erreur lors de la suppression de la conversation' });
+        } else if (results.affectedRows === 0) {
+            res.status(404).json({ error: 'Conversation non trouvée' });
+        } else {
+            res.json({ message: 'Conversation supprimée avec succès' });
+        }
+    });
+});
+
+
 // Générer la description du personnage en utilisant OpenAI
 function sendMessageToOpenAI(prompt, message) {
     return new Promise(async (resolve, reject) => {
