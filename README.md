@@ -2,7 +2,7 @@
 
 ## Informations générales
 
-En cours de développement - Front non fonctionnel - API Fonctionnelle
+*En cours de développement - Front non fonctionnel - API Fonctionnelle (sauf historique de conversation)*
 
 ## Description
 
@@ -24,15 +24,22 @@ Avant de commencer, assurez-vous d'avoir installé les éléments suivants :
 
 1. Clonez le dépôt : `git clone https://github.com/JulienArcioni89/chatrp`
 2. Accédez au répertoire du projet : `cd ChatRP`
-3. Accédez au répertoire du projet : `cd server`
+3. Accédez au répertoire `server` du projet : `cd server`
 4. Installez les dépendances : `npm install`
 5. Configurez la base de données : [Instructions de configuration de la base de données ci-dessous]
-6. Lancez l'API : `npm start` `index.js`
-7. Modifier le fichier `.env` avec votre clé API OpenAI
+6. Modifier le fichier `.env` avec votre clé API OpenAI. Le fichier se situe à la racine du projet.
+7. Lancez l'API : `npm start` dans `index.js`
 
 ## Configuration de la base de données
 
-### Méthode 1 : Création de la base de données
+
+### Etape 1 : Importer la base de données
+
+1. Récupérer le fichier `openai.sql` qui se situe à la racine de ce projet.
+2. Importez le fichier dans votre base de données MySQL.
+
+
+### Etape 2 : Connexion à la base de données existante
 
 1. Ouvrez le fichier `config/database.js` dans un éditeur de texte.
 2. Modifiez les paramètres de connexion à la base de données selon votre configuration :
@@ -40,11 +47,4 @@ Avant de commencer, assurez-vous d'avoir installé les éléments suivants :
     - Mot de passe : [Mot de passe MySQL]
     - Nom de la base de données : [Nom de la base de données]
 3. Enregistrez les modifications.
-
-
-### Méthode 2 : Importer la base de données
-
-1. Récupérer le fichier `openai.sql` qui se situe à la racine de ce projet.
-2. Importez le fichier dans votre base de données MySQL.
-
 ---
