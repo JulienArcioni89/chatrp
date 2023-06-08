@@ -30,6 +30,21 @@ router.post('/', authenticateToken, (req, res) => {
     });
 });
 
+// Supprimer un jeu par son ID
+router.delete('/:id', authenticateToken, (req, res) => {
+    const gameId = req.params.id;
+    const query = 'DELETE FROM games WHERE id = ?';
+    connection.query(query, [gameId], (error, results) => {
+        if (error) {
+            console.error('Erreur lors de la suppression du jeu :', error);
+            res.status(500).json({ error: 'Erreur lors de la suppression du jeu' });
+        } else if (results.affectedRows === 0) {
+            res.status(404).json({ error: 'Jeu non trouvé' });
+        } else {
+            res.json({ message: 'Jeu supprimé avec succès' });
+        }
+    });
+});
 
 
 // Récupérer un jeu par son ID
