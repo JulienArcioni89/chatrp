@@ -1,6 +1,6 @@
 const mysql = require('mysql');
 
-// Créer une connexion à la base de données
+// Créer une connexion à la base de données avec un utilisateur possédant tous les droits
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
@@ -8,6 +8,16 @@ const connection = mysql.createConnection({
     database: 'openai',
     port: 8889
 });
+
+
+// Créer une connexion à la base de données avec un utilisateur possédant uniquement le droit de lire les données
+/*const connection = mysql.createConnection({
+    host: 'localhost',
+    user: 'openai',
+    password: 'restricted',
+    database: 'openai',
+    port: 8889
+});*/
 
 // Établir la connexion à la base de données
 connection.connect((error) => {
