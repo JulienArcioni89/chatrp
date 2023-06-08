@@ -27,11 +27,12 @@ Avant de commencer, assurez-vous d'avoir installé les éléments suivants :
 3. Accédez au répertoire `server` du projet : `cd server`
 4. Installez les dépendances : `npm install`
 5. Configurez la base de données : [Instructions de configuration de la base de données ci-dessous]
-6. Modifier le fichier `.env` avec votre clé API OpenAI. Le fichier se situe à la racine du projet.
-7. Lancez l'API : `npm start` dans `index.js`
+6. Créer un fichier `.env` à la racine du projet. 
+7. Insérez la variable `OPENAI_API_KEY` pour renseigner votre clé OpenAI.
+8. Insérez la variable `SECRET_KEY` pour renseigner votre clé secrète et enregistrez le fichier.
+9. Lancez l'API : `npm start` dans `index.js`
 
 ## Configuration de la base de données
-
 
 ### Etape 1 : Importer la base de données
 
