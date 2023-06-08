@@ -2,7 +2,8 @@
 
 ## Informations générales
 
-*En cours de développement - Front non fonctionnel - API Fonctionnelle (sauf historique de conversation)*
+*En cours de développement - Front non fonctionnel - API Fonctionnelle (sauf historique de conversation)*\
+*En conséquence, seul le répertoire `server` est fonctionnel*
 
 ## Description
 
