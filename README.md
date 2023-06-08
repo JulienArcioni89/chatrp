@@ -50,4 +50,11 @@ Avant de commencer, assurez-vous d'avoir installé les éléments suivants :
     - Mot de passe : [Mot de passe MySQL]
     - Nom de la base de données : [Nom de la base de données]
 3. Enregistrez les modifications.
+
+
+## Utilisation
+1. Importez la collection Postman.
+2. Modifier dans la collection Postman la variable `url` pour renseigner l'URL correcte de l'API.
+3. Envoyer une requête Login pour obtenir un token.
+4. Prendre le token et le renseigner dans la variable `token` de la collection Postman (dans `Current value`).
 ---
