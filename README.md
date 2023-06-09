@@ -28,11 +28,12 @@ Avant de commencer, assurez-vous d'avoir installé les éléments suivants :
 3. Accédez au répertoire `server` du projet : `cd server`
 4. Installez les dépendances : `npm install`
 5. Installez dotenv : `npm install dotenv`
-6. Configurez la base de données : [Instructions de configuration de la base de données ci-dessous]
-7. Créer un fichier `.env` à la racine du projet. 
-8. Insérez la variable `OPENAI_API_KEY` pour renseigner votre clé OpenAI.
-9. Insérez la variable `SECRET_KEY` pour renseigner votre clé secrète et enregistrez le fichier.
-10. Lancez l'API : `node index.js` dans le dossier `server`.
+6. Installez bcrypt : `npm install bcrypt`
+7. Configurez la base de données : [Instructions de configuration de la base de données ci-dessous]
+8. Créer un fichier `.env` à la racine du projet. 
+9. Insérez la variable `OPENAI_API_KEY` pour renseigner votre clé OpenAI.
+10. Insérez la variable `SECRET_KEY` pour renseigner votre clé secrète et enregistrez le fichier.
+11. Lancez l'API : `node index.js` dans le dossier `server`.
 
 ## Configuration de la base de données
 
