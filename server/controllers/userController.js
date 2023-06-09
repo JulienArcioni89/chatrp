@@ -5,6 +5,8 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const connection = require('../config/database');
 const {authenticateToken} = require("../middleware/auth.middleware");
+const bcrypt = require('bcrypt');
+
 
 // Route pour récupérer tous les utilisateurs
 router.get('/', authenticateToken, (req, res) => {
@@ -55,16 +57,26 @@ router.get('/:id', authenticateToken, (req, res) => {
 // Route pour ajouter un utilisateur
 router.post('/', (req, res) => {
     const {nom, prenom, pwd, mail} = req.body;
-    const query = 'INSERT INTO users (nom, prenom, pwd, mail) VALUES (?, ?, ?, ?)';
-    connection.query(query, [nom, prenom, pwd, mail], (error, results) => {
+
+    // Générer le hachage sécurisé du mot de passe
+    bcrypt.hash(pwd, 10, (error, hashedPwd) => {
         if (error) {
-            console.error('Erreur lors de l\'ajout de l\'utilisateur :', error);
+            console.error('Erreur lors du hachage du mot de passe :', error);
             res.status(500).json({error: 'Erreur lors de l\'ajout de l\'utilisateur'});
         } else {
-            res.status(201).json({message: 'Utilisateur ajouté avec succès'});
+            const query = 'INSERT INTO users (nom, prenom, pwd, mail) VALUES (?, ?, ?, ?)';
+            connection.query(query, [nom, prenom, hashedPwd, mail], (error, results) => {
+                if (error) {
+                    console.error('Erreur lors de l\'ajout de l\'utilisateur :', error);
+                    res.status(500).json({error: 'Erreur lors de l\'ajout de l\'utilisateur'});
+                } else {
+                    res.status(201).json({message: 'Utilisateur ajouté avec succès'});
+                }
+            });
         }
     });
 });
+
 
 // Route pour modifier un utilisateur
 router.put('/:id', authenticateToken, (req, res) => {
@@ -89,23 +101,35 @@ router.post('/login', (req, res) => {
     const {mail, pwd} = req.body;
 
     // Vérifier les informations d'identification dans la base de données
-    const query = 'SELECT * FROM users WHERE mail = ? AND pwd = ?';
-    connection.query(query, [mail, pwd], (error, results) => {
+    const query = 'SELECT * FROM users WHERE mail = ?';
+    connection.query(query, [mail], (error, results) => {
         if (error) {
             console.error('Erreur lors de la connexion :', error);
             res.status(500).json({error: 'Erreur lors de la connexion'});
         } else if (results.length === 0) {
             res.status(401).json({error: 'Email ou mot de passe incorrect'});
         } else {
-            // Générer le token JWT
             const user = results[0];
-            const token = jwt.sign({id: user.id, mail: user.mail}, process.env.SECRET_KEY, {expiresIn: '7h'});
 
-            // Renvoyer le token JWT dans la réponse
-            res.json({token});
+            // Comparer le mot de passe fourni avec le mot de passe haché stocké
+            bcrypt.compare(pwd, user.pwd, (error, isMatch) => {
+                if (error) {
+                    console.error('Erreur lors de la comparaison des mots de passe :', error);
+                    res.status(500).json({error: 'Erreur lors de la connexion'});
+                } else if (!isMatch) {
+                    res.status(401).json({error: 'Email ou mot de passe incorrect'});
+                } else {
+                    // Générer le token JWT
+                    const token = jwt.sign({id: user.id, mail: user.mail}, process.env.SECRET_KEY, {expiresIn: '7h'});
+
+                    // Renvoyer le token JWT dans la réponse
+                    res.json({token});
+                }
+            });
         }
     });
 });
+
 
 
 module.exports = router;
