@@ -10,7 +10,7 @@ const connection = mysql.createConnection({
 });
 
 
-// Créer une connexion à la base de données avec un utilisateur possédant uniquement le droit de lire les données
+// DROITS LIMITES
 /*const connection = mysql.createConnection({
     host: 'localhost',
     user: 'openai',

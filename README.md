@@ -50,6 +50,7 @@ Avant de commencer, assurez-vous d'avoir installé les éléments suivants :
     - Mot de passe : [Mot de passe MySQL]
     - Nom de la base de données : [Nom de la base de données]
 3. Enregistrez les modifications.
+4. Un utilisateur avec des droits limités a été créé pour l'API. Son utilisation est possible en se rendant dans le fichier `config/database.js` et en décommentant la partie correspondante.
 
 
 ## Utilisation
