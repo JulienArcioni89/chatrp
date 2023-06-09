@@ -70,6 +70,8 @@ router.get('/', authenticateToken, (req, res) => {
         if (error) {
             console.error('Erreur lors de la récupération des jeux :', error);
             res.status(500).json({error: 'Erreur lors de la récupération des jeux'});
+        } else if (results.length === 0) {
+            res.status(404).json({error: 'Aucun jeu trouvé'});
         } else {
             res.json(results);
         }
