@@ -8,6 +8,7 @@ const userController = require('./controllers/userController');
 const gameController = require('./controllers/gameController');
 const characterController = require('./controllers/characterController');
 const chatController = require('./controllers/chatController');
+const convController = require('./controllers/convController');
 const {authenticateToken} = require("./middleware/auth.middleware");
 
 app.use(bodyParser.json());
@@ -18,6 +19,7 @@ app.use('/users', userController);
 app.use('/games', gameController);
 app.use('/characters', characterController);
 app.use('/chat', chatController);
+app.use('/conv', convController);
 
 // Middleware
 app.use(authenticateToken);
