@@ -8,29 +8,34 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final TextEditingController _usernameController = TextEditingController();
+  // final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _firstnameController = TextEditingController();
   final TextEditingController _lastnameController = TextEditingController();
 
   Future<void> _register() async {
-    final String username = _usernameController.text;
+    // final String username = _usernameController.text;
     final String password = _passwordController.text;
     final String email = _emailController.text;
     final String firstname = _firstnameController.text;
     final String lastname = _lastnameController.text;
 
     final String body = json.encode({
-      'username': username,
-      'password': password,
-      'email': email,
-      'firstname': firstname,
-      'lastname': lastname,
+      // 'username': username,
+      'pwd': password,
+      'mail': email,
+      'nom': firstname,
+      'prenom': lastname,
     });
 
+    final url = Uri.parse('http://localhost:3000/users');
+
+
     final response = await http.post(
-      Uri.https('caen0001.mds-caen.yt', '/users'),
+      // Uri.https('caen0001.mds-caen.yt', '/users'),
+      headers: {'Content-Type': 'application/json'},
+      url,
       body: body,
     );
 
@@ -80,25 +85,12 @@ class _RegisterPageState extends State<RegisterPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            TextField(
+/*            TextField(
               controller: _usernameController,
               decoration: const InputDecoration(
                 labelText: 'Nom d\'utilisateur',
               ),
-            ),
-            TextField(
-              controller: _passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: 'Mot de Passe',
-              ),
-            ),
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(
-                labelText: 'Email',
-              ),
-            ),
+            ),*/
             TextField(
               controller: _firstnameController,
               decoration: const InputDecoration(
@@ -108,7 +100,20 @@ class _RegisterPageState extends State<RegisterPage> {
             TextField(
               controller: _lastnameController,
               decoration: const InputDecoration(
-                labelText: 'Nom de famille',
+                labelText: 'Nom',
+              ),
+            ),
+            TextField(
+              controller: _emailController,
+              decoration: const InputDecoration(
+                labelText: 'Email',
+              ),
+            ),
+            TextField(
+              controller: _passwordController,
+              obscureText: true,
+              decoration: const InputDecoration(
+                labelText: 'Mot de Passe',
               ),
             ),
             ElevatedButton(
