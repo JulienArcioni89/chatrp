@@ -73,6 +73,7 @@ router.post('/:characterId', authenticateToken, async (req, res) => {
                             };
 
                             let message = req.body.message; // Message à envoyer à OpenAI
+                            console.log("Message envoyé a open AI après le prompt : ", message);
 
                             // Vérifier si une conversation existe déjà entre l'utilisateur et le personnage
                             const query = 'SELECT * FROM conversation WHERE user_id = ? AND character_id = ?';
@@ -97,7 +98,7 @@ router.post('/:characterId', authenticateToken, async (req, res) => {
                                         const conversationId = results[0].id;
                                         const historyOfConversation = await getConversationHistory(conversationId);
 
-                                        historyOfConversation.push("Maintenant reprenons la conversation : ")
+                                        // historyOfConversation.push("Maintenant reprenons la conversation : ")
                                         historyOfConversation.push(message);
 
                                         saveMessageInConversation(conversationId, message, 'user');
@@ -129,7 +130,7 @@ router.post('/:characterId', authenticateToken, async (req, res) => {
 // Générer la description du personnage en utilisant OpenAI
 function sendMessageToOpenAI(data, message) {
     return new Promise(async (resolve, reject) => {
-        const promptMessage = `A partir de maintenant on va jouer un jeu de role où tu vas incarner le personnage de ${data.character} du jeu vidéo ${data.game}. Comporte toi comme ${data.character} dans ${data.game}. \n${message}`;
+        const promptMessage = `Dans le cadre d'un jeu de rôle tu va incarner le personnage de ${data.character} issu du jeu ${data.game}. ${message}`;
         console.log('Prompt envoyé à OpenAI :', promptMessage);
         try {
             const response = await openai.createCompletion({
