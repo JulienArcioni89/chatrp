@@ -31,9 +31,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
     final url = Uri.parse('http://localhost:3000/users');
 
-
     final response = await http.post(
-      // Uri.https('caen0001.mds-caen.yt', '/users'),
       headers: {'Content-Type': 'application/json'},
       url,
       body: body,

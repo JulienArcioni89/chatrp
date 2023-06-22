@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:mydigitalgpt/conversation.dart';
 
-
 class HomePage extends StatefulWidget {
   final String token;
 
@@ -15,7 +14,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final TextEditingController _characterNameController = TextEditingController();
+  final TextEditingController _characterNameController =
+      TextEditingController();
   final TextEditingController _universeNameController = TextEditingController();
   Map<String, dynamic>? selectedUniverse;
   List<Map<String, dynamic>> userUniverses = [];
@@ -24,9 +24,7 @@ class _HomePageState extends State<HomePage> {
   bool isLoading = false;
   bool _isCharacterNameEmpty = true;
   bool _isUniverseNameEmpty = true;
-
   bool isCharacterSelected = false;
-
 
   @override
   void initState() {
@@ -51,9 +49,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final Map<String, dynamic> decodedToken = JwtDecoder.decode(widget.token);
-    final data = jsonDecode(decodedToken['data']);
-    final firstname = data['firstname'];
-    final user_id = data['id'];
+    final mail = decodedToken['mail'];
 
     return Scaffold(
       appBar: AppBar(
@@ -63,7 +59,7 @@ class _HomePageState extends State<HomePage> {
         children: [
           Center(
             child: Text(
-              'Bonjour, $firstname !',
+              'Bonjour, $mail !',
               style: TextStyle(fontSize: 24),
             ),
           ),
@@ -84,7 +80,7 @@ class _HomePageState extends State<HomePage> {
             },
           ),
           ElevatedButton(
-            onPressed:  _isUniverseNameEmpty ? null : _createUniverse,
+            onPressed: _isUniverseNameEmpty ? null : _createUniverse,
             child: const Text('Créer un univers'), // Texte du bouton
           ),
           SizedBox(height: 20),
@@ -99,15 +95,15 @@ class _HomePageState extends State<HomePage> {
                 selectedUniverse = newValue;
               });
             },
-            items: userUniverses.map<DropdownMenuItem<Map<String, dynamic>>>((Map<String, dynamic> value) {
+            items: userUniverses.map<DropdownMenuItem<Map<String, dynamic>>>(
+                (Map<String, dynamic> value) {
               return DropdownMenuItem<Map<String, dynamic>>(
                 value: value,
-                child: Text(value['name']),
+                child: Text(value['nom']),
               );
             }).toList(),
             hint: Text('Sélectionner un univers'),
           ),
-
           TextField(
             controller: _characterNameController,
             decoration: const InputDecoration(
@@ -134,10 +130,11 @@ class _HomePageState extends State<HomePage> {
                 }
               });
             },
-            items: userUniverses.map<DropdownMenuItem<Map<String, dynamic>>>((Map<String, dynamic> value) {
+            items: userUniverses.map<DropdownMenuItem<Map<String, dynamic>>>(
+                (Map<String, dynamic> value) {
               return DropdownMenuItem<Map<String, dynamic>>(
                 value: value,
-                child: Text(value['name']),
+                child: Text(value['nom']),
               );
             }).toList(),
             hint: Text('Sélectionner un univers'),
@@ -150,7 +147,9 @@ class _HomePageState extends State<HomePage> {
                 isCharacterSelected = newValue != null;
               });
             },
-            items: charactersByUniverse.map<DropdownMenuItem<Map<String, dynamic>>>((Map<String, dynamic> value) {
+            items: charactersByUniverse
+                .map<DropdownMenuItem<Map<String, dynamic>>>(
+                    (Map<String, dynamic> value) {
               return DropdownMenuItem<Map<String, dynamic>>(
                 value: value,
                 child: Text(value['name']),
@@ -173,8 +172,9 @@ class _HomePageState extends State<HomePage> {
       print('Personnage sélectionné : ${selectedCharacters!['id']}');
 
       final Map<String, dynamic> decodedToken = JwtDecoder.decode(widget.token);
-      final data = jsonDecode(decodedToken['data']);
-      final user_id = data['id'];
+      print(decodedToken);
+      final user_id = decodedToken['id'];
+
       // Préparer les données pour la requête API
       final Map<String, dynamic> requestData = {
         'character_id': selectedCharacters!['id'],
@@ -187,12 +187,14 @@ class _HomePageState extends State<HomePage> {
       // Préparer les en-têtes de la requête
       final Map<String, String> requestHeaders = {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${widget.token}',
+        'Authorization': '${widget.token}',
       };
+
+      final url = Uri.parse('http://localhost:3000/chat/${selectedCharacters!['id']}');
 
       // Faire l'appel à l'API "create character"
       final response = await http.post(
-        Uri.https('caen0001.mds-caen.yt', '/conversations'),
+        url,
         headers: requestHeaders,
         body: requestBody,
       );
@@ -211,14 +213,14 @@ class _HomePageState extends State<HomePage> {
           ),
         );
       } else {
-
         print(response.body);
         print(response.statusCode);
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('Erreur de création API'),
-            content: const Text('Une erreur est survenue lors de la création de la conversation.'),
+            content: const Text(
+                'Une erreur est survenue lors de la création de la conversation.'),
             actions: [
               TextButton(
                 child: const Text('OK'),
@@ -226,16 +228,14 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
-        );      }
-
+        );
+      }
     } else {
       print('Veuillez sélectionner un univers et un personnage.');
     }
   }
 
-
   void _createUniverse() async {
-
     final String universeName = _universeNameController.text;
 
     // Vérifier si le champ "Nom de l'univers" est vide
@@ -258,7 +258,7 @@ class _HomePageState extends State<HomePage> {
 
     // Préparer les données pour la requête API
     final Map<String, String> requestData = {
-      'name': universeName,
+      'nom': universeName,
     };
 
     // Convertir les données en JSON
@@ -267,19 +267,22 @@ class _HomePageState extends State<HomePage> {
     // Préparer les en-têtes de la requête
     final Map<String, String> requestHeaders = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${widget.token}',
+      'Authorization': '${widget.token}',
     };
+
+    final url = Uri.parse('http://localhost:3000/games');
 
     // Faire l'appel à l'API "create universe"
     final response = await http.post(
-      Uri.https('caen0001.mds-caen.yt', '/universes'),
+      url,
       headers: requestHeaders,
       body: requestBody,
     );
 
-    // Traiter la réponse de l'API
     if (response.statusCode == 201) {
-      // Succès : univers créé avec succès
+/*      final responseData = jsonDecode(response.body);
+      final errorMessage = responseData['message'];
+      print(errorMessage);*/
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -294,12 +297,12 @@ class _HomePageState extends State<HomePage> {
         ),
       );
     } else {
-      // Erreur : échec de la création de l'univers
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Erreur de création API'),
-          content: const Text('Une erreur est survenue lors de la création de l\'univers.'),
+          content: const Text(
+              'Une erreur est survenue lors de la création de l\'univers.'),
           actions: [
             TextButton(
               child: const Text('OK'),
@@ -320,46 +323,65 @@ class _HomePageState extends State<HomePage> {
   void _fetchUserUniverses() async {
     final Map<String, String> requestHeaders = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${widget.token}',
+      'Authorization': '${widget.token}',
     };
 
+    final url = Uri.parse('http://localhost:3000/games');
+
     final response = await http.get(
-      Uri.https('caen0001.mds-caen.yt', '/universes'),
+      url,
       headers: requestHeaders,
     );
 
     if (response.statusCode == 200) {
       final List<dynamic> universesData = jsonDecode(response.body);
-      final List<Map<String, dynamic>> universes = universesData.map<Map<String, dynamic>>((data) {
+      final List<Map<String, dynamic>> universes =
+          universesData.map<Map<String, dynamic>>((data) {
         final int id = data['id'] as int;
-        final String name = data['name'] as String;
-        return {'id': id, 'name': name};
+        final String name = data['nom'] as String;
+        return {'id': id, 'nom': name};
       }).toList();
-
       setState(() {
         userUniverses = universes;
       });
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Erreur de récupération des univers'),
+          content: const Text(
+              'Une erreur est survenue lors de la récupération des univers.'),
+          actions: [
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        ),
+      );
     }
   }
 
-
-  void _fetchCharactersByUniverse(int universeId) async {
+  void _fetchCharactersByUniverse(int GameId) async {
     final Map<String, String> requestHeaders = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${widget.token}',
+      'Authorization': '${widget.token}',
     };
 
+    final url = Uri.parse('http://localhost:3000/characters/game/$GameId');
+
     final response = await http.get(
-      Uri.https('caen0001.mds-caen.yt', '/universes/$universeId/characters'),
+      url,
       headers: requestHeaders,
     );
 
     if (response.statusCode == 200) {
       final List<dynamic> charactersData = jsonDecode(response.body);
-      final List<Map<String, dynamic>> characters = charactersData.map<Map<String, dynamic>>((data) {
+      final List<Map<String, dynamic>> characters =
+          charactersData.map<Map<String, dynamic>>((data) {
         final int id = data['id'] as int;
         final String name = data['name'] as String;
-        return {'id': id, 'name': name};
+        return {'name': name, 'id': id};
       }).toList();
 
       setState(() {
@@ -367,7 +389,6 @@ class _HomePageState extends State<HomePage> {
       });
     }
   }
-
 
   void _createCharacter() async {
     final String characterName = _characterNameController.text;
@@ -406,7 +427,7 @@ class _HomePageState extends State<HomePage> {
 
     // Préparer les données pour la requête API
     final Map<String, dynamic> requestData = {
-      'name': characterName,
+      'nom': characterName,
       'universe': selectedUniverse,
     };
 
@@ -416,71 +437,63 @@ class _HomePageState extends State<HomePage> {
     // Préparer les en-têtes de la requête
     final Map<String, String> requestHeaders = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${widget.token}',
+      'Authorization': '${widget.token}',
     };
+
+    final url = Uri.parse(
+        'http://localhost:3000/characters/game/${selectedUniverse!['id']}');
 
     // Faire l'appel à l'API "create character"
     final response = await http.post(
-      Uri.https('caen0001.mds-caen.yt', '/universes/${selectedUniverse!['id']}/characters'),
+      url,
       headers: requestHeaders,
       body: requestBody,
     );
 
     // Traiter la réponse de l'API
     if (response.statusCode == 201) {
-
-
       // Récupérer l'ID du personnage créé
+      setState(() {
+        isLoading = false;
+      });
       final Map<String, dynamic> responseData = jsonDecode(response.body);
+      final url = Uri.parse(
+          'http://localhost:3000/characters/game/${selectedUniverse!['id']}/characters/${responseData['id']}');
       final generateDescription = await http.put(
-        Uri.https('caen0001.mds-caen.yt', '/universes/${selectedUniverse!['id']}/characters/${responseData['id']}'),
+        url,
         headers: requestHeaders,
       );
 
-      if (generateDescription.statusCode == 200) {
-        // Succès : personnage créé avec succès
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Personnage créé'),
-            content: const Text('Le personnage a été créé avec succès.'),
-            actions: [
-              TextButton(
-                child: const Text('OK'),
-                onPressed: () {
-                  setState(() {
-                    isLoading = false;
-                  });
-                  Navigator.pop(context);
-                },              ),
-            ],
-          ),
-        );
-      } else {
-
-        // Erreur : échec de la création du personnage
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Erreur de création'),
-            content: const Text('Une erreur est survenue lors de la création du personnage.'),
-            actions: [
-              TextButton(
-                child: const Text('OK'),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ],
-          ),
-        );
-      }
-
+      // Succès : personnage créé avec succès
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Personnage créé'),
+          content: const Text('Le personnage a été créé avec succès.'),
+          actions: [
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                setState(() {
+                  isLoading = false;
+                });
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+      );
     } else {
       // Erreur : échec de la création du personnage
+      setState(() {
+        isLoading = false;
+      });
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Erreur de création'),
-          content: const Text('Une erreur est survenue lors de la création du personnage.'),
+          content: const Text(
+              'Une erreur est survenue lors de la création du personnage.'),
           actions: [
             TextButton(
               child: const Text('OK'),
@@ -489,7 +502,8 @@ class _HomePageState extends State<HomePage> {
                   isLoading = false; // Désactiver le chargement
                 });
                 Navigator.pop(context);
-              },            ),
+              },
+            ),
           ],
         ),
       );
@@ -498,4 +512,5 @@ class _HomePageState extends State<HomePage> {
     // Réinitialiser le champ de texte du nom du personnage
     _characterNameController.clear();
   }
+
 }

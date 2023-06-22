@@ -19,15 +19,13 @@ class _LoginPageState extends State<LoginPage> {
     final String username = _usernameController.text;
     final String password = _passwordController.text;
 
-    // print('username : $username');
-    // print('password : $password');
 
     // Création du corps de la requête en utilisant les données d'authentification
     final String body = json.encode({
       'mail': username,
       'pwd': password,
     });
-    print('body : $body');
+
     final url = Uri.parse('http://localhost:3000/users/login');
 
     // Envoi de la requête POST pour obtenir le token
@@ -36,10 +34,6 @@ class _LoginPageState extends State<LoginPage> {
       url,
       body: body,
     );
-
-    // print('Code de statut : ${response.statusCode}');
-    // print('Corps de la réponse : ${response.body}');
-
 
     if (response.statusCode == 200) {
       // Analyse de la réponse JSON pour extraire le token

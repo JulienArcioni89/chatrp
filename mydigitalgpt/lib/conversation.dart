@@ -35,11 +35,13 @@ class _ConversationPageState extends State<ConversationPage> {
 
     final Map<String, String> requestHeaders = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${widget.token}',
+      'Authorization': '${widget.token}',
     };
 
+    final url = Uri.parse('http://localhost:3000/chat/character');
+
     final response = await http.post(
-      Uri.https('caen0001.mds-caen.yt', '/conversations/${widget.conversationId}/messages'),
+      url,
       headers: requestHeaders,
       body: requestBody,
     );
