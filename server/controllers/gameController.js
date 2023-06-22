@@ -7,6 +7,8 @@ router.post('/', authenticateToken, (req, res) => {
     const { nom } = req.body;
     const userId = req.user.id; // Récupérer l'ID de l'utilisateur depuis le token décodé
 
+    console.log('L\'API a recu :',nom, userId);
+
     // Vérifier si un jeu avec le même nom existe déjà
     const checkQuery = 'SELECT id FROM games WHERE nom = ?';
     connection.query(checkQuery, [nom], (checkError, checkResults) => {
@@ -20,7 +22,7 @@ router.post('/', authenticateToken, (req, res) => {
             const insertQuery = 'INSERT INTO games (nom, user_id) VALUES (?, ?)';
             connection.query(insertQuery, [nom, userId], (insertError, insertResults) => {
                 if (insertError) {
-                    console.error('Erreur lors de la création du jeu :', insertError);
+                    console.error('Erreur lors de la création du jeu : ', insertError);
                     res.status(500).json({ error: 'Erreur lors de la création du jeu' });
                 } else {
                     res.status(201).json({ message: 'Jeu créé avec succès' });
@@ -94,6 +96,5 @@ router.put('/:id', authenticateToken, (req, res) => {
         }
     });
 });
-
 
 module.exports = router;
