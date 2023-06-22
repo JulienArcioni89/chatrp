@@ -133,7 +133,7 @@ function sendMessageToOpenAI(data, message) {
         console.log('Prompt envoyé à OpenAI :', promptMessage);
         try {
             const response = await openai.createCompletion({
-                model: 'text-ada-001',
+                model: 'text-davinci-003',
                 prompt: promptMessage,
                 temperature: 1,
                 max_tokens: 50,
@@ -155,7 +155,7 @@ function createConversationAndSaveMessage(userId, characterId, message) {
     return new Promise((resolve, reject) => {
         if (!message) {
             console.error('Le message est vide');
-            reject(new Error('Le message est vide'));
+            // reject(new Error('Le message est vide'));
             return;
         }
 
