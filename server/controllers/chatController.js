@@ -133,7 +133,7 @@ function sendMessageToOpenAI(data, message) {
         console.log('Prompt envoyé à OpenAI :', promptMessage);
         try {
             const response = await openai.createCompletion({
-                model: 'text-davinci-003',
+                model: 'text-ada-001',
                 prompt: promptMessage,
                 temperature: 1,
                 max_tokens: 50,
