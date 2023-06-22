@@ -158,9 +158,22 @@ class _HomePageState extends State<HomePage> {
             hint: Text('Sélectionner un personnage'),
           ),
           ElevatedButton(
-            onPressed: isCharacterSelected ? _startConversation : null,
+            onPressed: isCharacterSelected
+                ? () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ConversationPage(
+                    token: widget.token, // Passer le token à la nouvelle page
+                    conversationId: selectedCharacters!['id'],
+                  ),
+                ),
+              );
+            }
+                : null,
             child: const Text('Démarrer la conversation'),
           ),
+
         ],
       ),
     );
@@ -172,7 +185,6 @@ class _HomePageState extends State<HomePage> {
       print('Personnage sélectionné : ${selectedCharacters!['id']}');
 
       final Map<String, dynamic> decodedToken = JwtDecoder.decode(widget.token);
-      print(decodedToken);
       final user_id = decodedToken['id'];
 
       // Préparer les données pour la requête API
@@ -191,6 +203,7 @@ class _HomePageState extends State<HomePage> {
       };
 
       final url = Uri.parse('http://localhost:3000/chat/${selectedCharacters!['id']}');
+
 
       // Faire l'appel à l'API "create character"
       final response = await http.post(

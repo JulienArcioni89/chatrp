@@ -28,7 +28,7 @@ class _ConversationPageState extends State<ConversationPage> {
 
 
     final Map<String, dynamic> requestData = {
-      'content': message
+      'message': message
     };
 
     final String requestBody = jsonEncode(requestData);
@@ -38,23 +38,27 @@ class _ConversationPageState extends State<ConversationPage> {
       'Authorization': '${widget.token}',
     };
 
-    final url = Uri.parse('http://localhost:3000/chat/character');
+    final url = Uri.parse('http://localhost:3000/chat/${widget.conversationId}');
 
     final response = await http.post(
       url,
       headers: requestHeaders,
       body: requestBody,
     );
+    print('Contenu du body envoyé : ${requestBody}');
+    print('Contenu de la reponse : ${response.body}');
 
-    if (response.statusCode == 201) {
-      Map<String, dynamic> responseData = jsonDecode(response.body);
-      Map<String, dynamic> sentMessage = responseData['message'];
-      Map<String, dynamic> receivedMessage = responseData['answer'];
+    if (response.statusCode == 200) {
+      dynamic responseData = jsonDecode(response.body);
+
+      String receivedMessage = responseData['response'];
+      String sentMessage = requestData['message'];
 
       setState(() {
-        _messages.add(sentMessage);
-        _messages.add(receivedMessage);
+        _messages.add({'message': sentMessage, 'is_sent_by_human': true});
+        _messages.add({'message': receivedMessage, 'is_sent_by_human': false});
       });
+
     }
     // Après avoir envoyé le message, désactivez l'indicateur de saisie
     setState(() {
@@ -76,8 +80,15 @@ class _ConversationPageState extends State<ConversationPage> {
               reverse: true,
               itemCount: _messages.length,
               itemBuilder: (context, index) {
-                Map<String, dynamic> message = _messages[_messages.length - index - 1];
-                bool isSentByHuman = message['is_sent_by_human'];
+                if (_messages.isEmpty) {
+                  return Container(); // Retourne un conteneur vide si la liste est vide
+                }
+
+                Map<String, dynamic> message =
+                _messages[_messages.length - index - 1];
+                bool isSentByHuman = message.containsKey('is_sent_by_human')
+                    ? message['is_sent_by_human']
+                    : false;
 
                 return Align(
                   alignment: isSentByHuman ? Alignment.centerRight : Alignment.centerLeft,
@@ -89,7 +100,7 @@ class _ConversationPageState extends State<ConversationPage> {
                       borderRadius: BorderRadius.circular(12.0),
                     ),
                     child: Text(
-                      message['content'],
+                      message['message'],
                       style: TextStyle(
                         color: isSentByHuman ? Colors.white : Colors.black,
                       ),
