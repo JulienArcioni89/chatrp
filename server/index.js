@@ -25,7 +25,6 @@ app.use('/conv', convController);
 app.use(authenticateToken);
 
 
-
 // Définis les routes de l'API
 app.get('/', (req, res) => {
     res.send('API fonctionne !');
