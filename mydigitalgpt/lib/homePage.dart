@@ -50,16 +50,17 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final Map<String, dynamic> decodedToken = JwtDecoder.decode(widget.token);
     final mail = decodedToken['mail'];
+    final username = decodedToken['username'];
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mon Espace'),
+        title: const Text('ChatRP'),
       ),
       body: Column(
         children: [
           Center(
             child: Text(
-              'Bonjour, $mail !',
+              'Bonjour, $username !',
               style: TextStyle(fontSize: 24),
             ),
           ),
