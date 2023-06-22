@@ -110,6 +110,7 @@ router.post('/login', (req, res) => {
             res.status(401).json({error: 'Email ou mot de passe incorrect'});
         } else {
             const user = results[0];
+            const username = ('user : ', user.nom);
 
             // Comparer le mot de passe fourni avec le mot de passe haché stocké
             bcrypt.compare(pwd, user.pwd, (error, isMatch) => {
@@ -120,7 +121,7 @@ router.post('/login', (req, res) => {
                     res.status(401).json({error: 'Email ou mot de passe incorrect'});
                 } else {
                     // Générer le token JWT
-                    const token = jwt.sign({id: user.id, mail: user.mail}, process.env.SECRET_KEY, {expiresIn: '7h'});
+                    const token = jwt.sign({id: user.id, mail: user.mail, username: username}, process.env.SECRET_KEY, {expiresIn: '7h'});
 
                     // Renvoyer le token JWT dans la réponse
                     res.json({token});
@@ -129,7 +130,5 @@ router.post('/login', (req, res) => {
         }
     });
 });
-
-
 
 module.exports = router;
