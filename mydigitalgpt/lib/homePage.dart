@@ -5,6 +5,7 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:mydigitalgpt/conversation.dart';
 import 'package:mydigitalgpt/addGame.dart';
 import 'package:mydigitalgpt/addCharacter.dart';
+import 'package:mydigitalgpt/startConversation.dart';
 
 class HomePage extends StatefulWidget {
   final String token;
@@ -141,7 +142,37 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
 
-
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => StartConversationPage(token: '$token',)),
+                  );
+                },
+                child: Card(
+                  color: Colors.white,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        Icon(
+                          Icons.chat_bubble,
+                          size: 50,
+                          color: Colors.black,
+                        ),
+                        Text(
+                          'Commencer une conversation',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
 
 
 /*              Card(
