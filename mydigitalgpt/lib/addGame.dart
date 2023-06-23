@@ -70,7 +70,11 @@ class _AddGamePageState extends State<AddGamePage> {
                       SizedBox(height: 10),
                       ElevatedButton(
                         onPressed: _isUniverseNameEmpty ? null : _createUniverse,
-                        style: ElevatedButton.styleFrom(primary: Colors.orange),
+                        style: ElevatedButton.styleFrom(
+                          primary: Color(0xFFE66745),
+                          onPrimary: Color(0xFFFFFFFF),
+                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                        ),
                         child: const Text('Créer un jeu'),
                       ),
                     ],

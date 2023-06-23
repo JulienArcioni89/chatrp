@@ -120,8 +120,13 @@ class _StartConversationPageState extends State<StartConversationPage> {
                                 );
                               }
                             : null,
-                        style: ElevatedButton.styleFrom(primary: Colors.purple),
+                        style: ElevatedButton.styleFrom(
+                          primary: Color(0xFFE66745),
+                          onPrimary: Color(0xFFFFFFFF),
+                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                        ),
                         child: const Text('Démarrer la conversation'),
+
                       ),
                     ],
                   ),

@@ -98,7 +98,11 @@ class _AddCharacterPageState extends State<AddCharacterPage> {
                       ElevatedButton(
                         onPressed:
                             _isCharacterNameEmpty ? null : _createCharacter,
-                        style: ElevatedButton.styleFrom(primary: Colors.green),
+                        style: ElevatedButton.styleFrom(
+                          primary: Color(0xFFE66745),
+                          onPrimary: Color(0xFFFFFFFF),
+                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                        ),
                         child: const Text('Créer un personnage'),
                       ),
                     ],
