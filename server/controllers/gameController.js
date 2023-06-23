@@ -68,6 +68,7 @@ router.get('/:id', authenticateToken, (req, res) => {
 // Récupérer tous les jeux
 router.get('/', authenticateToken, (req, res) => {
     const query = 'SELECT * FROM games';
+    console.log('L\'API a recu :',query);
     connection.query(query, (error, results) => {
         if (error) {
             console.error('Erreur lors de la récupération des jeux :', error);
