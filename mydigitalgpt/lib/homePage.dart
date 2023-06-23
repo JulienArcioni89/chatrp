@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:mydigitalgpt/conversation.dart';
+import 'package:mydigitalgpt/addGame.dart';
+import 'package:mydigitalgpt/addCharacter.dart';
 
 class HomePage extends StatefulWidget {
   final String token;
@@ -48,141 +50,280 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final token = widget.token;
     final Map<String, dynamic> decodedToken = JwtDecoder.decode(widget.token);
-    final mail = decodedToken['mail'];
     final username = decodedToken['username'];
 
     return Scaffold(
+      //définir les variables de couleur :
+      backgroundColor: Color(0xFFF5F4F4),
       appBar: AppBar(
         title: const Text('ChatRP'),
+        backgroundColor: Color(0xFFD9B998),
       ),
-      body: Column(
-        children: [
-          Center(
-            child: Text(
-              'Bonjour, $username !',
-              style: TextStyle(fontSize: 24),
-            ),
-          ),
-          SizedBox(height: 20),
-          Text(
-            'Création d\'un univers',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          TextField(
-            controller: _universeNameController,
-            decoration: const InputDecoration(
-              labelText: 'Nom de l\'univers',
-            ),
-            onChanged: (value) {
-              setState(() {
-                _isUniverseNameEmpty = value.isEmpty;
-              });
-            },
-          ),
-          ElevatedButton(
-            onPressed: _isUniverseNameEmpty ? null : _createUniverse,
-            child: const Text('Créer un univers'), // Texte du bouton
-          ),
-          SizedBox(height: 20),
-          Text(
-            'Ajout d\'un personnage',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          DropdownButton<Map<String, dynamic>>(
-            value: selectedUniverse,
-            onChanged: (Map<String, dynamic>? newValue) {
-              setState(() {
-                selectedUniverse = newValue;
-              });
-            },
-            items: userUniverses.map<DropdownMenuItem<Map<String, dynamic>>>(
-                (Map<String, dynamic> value) {
-              return DropdownMenuItem<Map<String, dynamic>>(
-                value: value,
-                child: Text(value['nom']),
-              );
-            }).toList(),
-            hint: Text('Sélectionner un univers'),
-          ),
-          TextField(
-            controller: _characterNameController,
-            decoration: const InputDecoration(
-              labelText: 'Nom du personnage',
-            ),
-          ),
-          ElevatedButton(
-            onPressed: _isCharacterNameEmpty ? null : _createCharacter,
-            child: const Text('Créer un personnage'),
-          ),
-          if (isLoading) CircularProgressIndicator(),
-          SizedBox(height: 20),
-          Text(
-            'Sélection d\'un personnage',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          DropdownButton<Map<String, dynamic>>(
-            value: selectedUniverse,
-            onChanged: (Map<String, dynamic>? newValue) {
-              setState(() {
-                selectedUniverse = newValue;
-                if (newValue != null) {
-                  _fetchCharactersByUniverse(newValue['id']);
-                }
-              });
-            },
-            items: userUniverses.map<DropdownMenuItem<Map<String, dynamic>>>(
-                (Map<String, dynamic> value) {
-              return DropdownMenuItem<Map<String, dynamic>>(
-                value: value,
-                child: Text(value['nom']),
-              );
-            }).toList(),
-            hint: Text('Sélectionner un univers'),
-          ),
-          DropdownButton<Map<String, dynamic>>(
-            value: selectedCharacters,
-            onChanged: (Map<String, dynamic>? newValue) {
-              setState(() {
-                selectedCharacters = newValue;
-                isCharacterSelected = newValue != null;
-              });
-            },
-            items: charactersByUniverse
-                .map<DropdownMenuItem<Map<String, dynamic>>>(
-                    (Map<String, dynamic> value) {
-              return DropdownMenuItem<Map<String, dynamic>>(
-                value: value,
-                child: Text(value['name']),
-              );
-            }).toList(),
-            hint: Text('Sélectionner un personnage'),
-          ),
-          ElevatedButton(
-            onPressed: isCharacterSelected
-                ? () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ConversationPage(
-                    token: widget.token, // Passer le token à la nouvelle page
-                    conversationId: selectedCharacters!['id'],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+
+              Center(
+                child: Text(
+                  'Bonjour $username !',
+                  style: TextStyle(fontSize: 28, color: Color(0xFF36453B)),
+                ),
+              ),
+              SizedBox(height: 20),
+
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => AddGamePage(token: '$token',)),
+                  );
+                },
+                child: Card(
+                  color: Colors.white,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        Icon(
+                          Icons.gamepad, // Icône de manette de jeu
+                          size: 50,
+                          color: Colors.black,
+                        ),
+                        Text(
+                          'Ajouter un jeu',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              );
-            }
-                : null,
-            child: const Text('Démarrer la conversation'),
-          ),
+              ),
 
-        ],
+
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => AddCharacterPage(token: '$token',)),
+                  );
+                },
+                child: Card(
+                  color: Colors.white,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        Icon(
+                          Icons.person_add, // Icône de manette de jeu
+                          size: 50,
+                          color: Colors.black,
+                        ),
+                        Text(
+                          'Ajouter un personnage',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+
+
+
+/*              Card(
+                color: Color(0xFF36453B),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    'Création d\'un jeu',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
+                ),
+              ),
+              SizedBox(height: 10),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      TextField(
+                        controller: _universeNameController,
+                        decoration: InputDecoration(
+                          labelText: 'Nom du jeu',
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            _isUniverseNameEmpty = value.isEmpty;
+                          });
+                        },
+                      ),
+                      SizedBox(height: 10),
+                      ElevatedButton(
+                        onPressed: _isUniverseNameEmpty ? null : _createUniverse,
+                        style: ElevatedButton.styleFrom(primary: Colors.orange),
+                        child: const Text('Créer un jeu'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),*/
+/*              Card(
+                color: Color(0xFF36453B),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    'Ajout d\'un personnage',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
+                ),
+              ),
+              SizedBox(height: 10),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      DropdownButton<Map<String, dynamic>>(
+                        value: selectedUniverse,
+                        onChanged: (Map<String, dynamic>? newValue) {
+                          setState(() {
+                            selectedUniverse = newValue;
+                          });
+                        },
+                        items: userUniverses.map<DropdownMenuItem<Map<String, dynamic>>>(
+                              (Map<String, dynamic> value) {
+                            return DropdownMenuItem<Map<String, dynamic>>(
+                              value: value,
+                              child: Text(value['nom']),
+                            );
+                          },
+                        ).toList(),
+                        hint: Text('Sélectionner un jeu'),
+                      ),
+                      SizedBox(height: 10),
+                      TextField(
+                        controller: _characterNameController,
+                        decoration: InputDecoration(
+                          labelText: 'Nom du personnage',
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      ElevatedButton(
+                        onPressed: _isCharacterNameEmpty ? null : _createCharacter,
+                        style: ElevatedButton.styleFrom(primary: Colors.green),
+                        child: const Text('Créer un personnage'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              if (isLoading) CircularProgressIndicator(),*/
+              SizedBox(height: 20),
+              Card(
+                color: Color(0xFF36453B),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    'Sélection d\'un personnage',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
+                ),
+              ),
+              SizedBox(height: 10),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      DropdownButton<Map<String, dynamic>>(
+                        value: selectedUniverse,
+                        onChanged: (Map<String, dynamic>? newValue) {
+                          setState(() {
+                            selectedUniverse = newValue;
+                            if (newValue != null) {
+                              _fetchCharactersByUniverse(newValue['id']);
+                            }
+                          });
+                        },
+                        items: userUniverses.map<DropdownMenuItem<Map<String, dynamic>>>(
+                              (Map<String, dynamic> value) {
+                            return DropdownMenuItem<Map<String, dynamic>>(
+                              value: value,
+                              child: Text(value['nom']),
+                            );
+                          },
+                        ).toList(),
+                        hint: Text('Sélectionner un jeu'),
+                      ),
+                      SizedBox(height: 10),
+                      DropdownButton<Map<String, dynamic>>(
+                        value: selectedCharacters,
+                        onChanged: (Map<String, dynamic>? newValue) {
+                          setState(() {
+                            selectedCharacters = newValue;
+                            isCharacterSelected = newValue != null;
+                          });
+                        },
+                        items: charactersByUniverse.map<DropdownMenuItem<Map<String, dynamic>>>(
+                              (Map<String, dynamic> value) {
+                            return DropdownMenuItem<Map<String, dynamic>>(
+                              value: value,
+                              child: Text(value['name']),
+                            );
+                          },
+                        ).toList(),
+                        hint: Text('Sélectionner un personnage'),
+                      ),
+                      SizedBox(height: 10),
+                      ElevatedButton(
+                        onPressed: isCharacterSelected
+                            ? () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ConversationPage(
+                                token: widget.token,
+                                conversationId: selectedCharacters!['id'],
+                              ),
+                            ),
+                          );
+                        }
+                            : null,
+                        style: ElevatedButton.styleFrom(primary: Colors.purple),
+                        child: const Text('Démarrer la conversation'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
 
   Future<void> _startConversation() async {
     if (selectedUniverse != null && selectedCharacters != null) {
-      print('Univers sélectionné : ${selectedUniverse!['id']}');
+      print('Jeu sélectionné : ${selectedUniverse!['id']}');
       print('Personnage sélectionné : ${selectedCharacters!['id']}');
 
       final Map<String, dynamic> decodedToken = JwtDecoder.decode(widget.token);
@@ -245,10 +386,9 @@ class _HomePageState extends State<HomePage> {
         );
       }
     } else {
-      print('Veuillez sélectionner un univers et un personnage.');
+      print('Veuillez sélectionner un jeu et un personnage.');
     }
   }
-
   void _createUniverse() async {
     final String universeName = _universeNameController.text;
 
@@ -258,7 +398,7 @@ class _HomePageState extends State<HomePage> {
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Erreur de saisie'),
-          content: const Text('Veuillez saisir un nom pour l\'univers.'),
+          content: const Text('Veuillez saisir un nom pour le jeu.'),
           actions: [
             TextButton(
               child: const Text('OK'),
@@ -300,8 +440,8 @@ class _HomePageState extends State<HomePage> {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Univers créé'),
-          content: const Text('L\'univers a été créé avec succès.'),
+          title: const Text('Jeu créé'),
+          content: const Text('Le jeu a été créé avec succès.'),
           actions: [
             TextButton(
               child: const Text('OK'),
@@ -316,7 +456,7 @@ class _HomePageState extends State<HomePage> {
         builder: (context) => AlertDialog(
           title: const Text('Erreur de création API'),
           content: const Text(
-              'Une erreur est survenue lors de la création de l\'univers.'),
+              'Une erreur est survenue lors de la création du jeu.'),
           actions: [
             TextButton(
               child: const Text('OK'),
@@ -333,7 +473,6 @@ class _HomePageState extends State<HomePage> {
     // Rafraîchir la liste des univers de l'utilisateur
     _fetchUserUniverses();
   }
-
   void _fetchUserUniverses() async {
     final Map<String, String> requestHeaders = {
       'Content-Type': 'application/json',
@@ -362,9 +501,9 @@ class _HomePageState extends State<HomePage> {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Erreur de récupération des univers'),
+          title: const Text('Erreur de récupération des jeux'),
           content: const Text(
-              'Une erreur est survenue lors de la récupération des univers.'),
+              'Une erreur est survenue lors de la récupération des jeux.'),
           actions: [
             TextButton(
               child: const Text('OK'),
@@ -375,7 +514,6 @@ class _HomePageState extends State<HomePage> {
       );
     }
   }
-
   void _fetchCharactersByUniverse(int GameId) async {
     final Map<String, String> requestHeaders = {
       'Content-Type': 'application/json',
@@ -403,7 +541,6 @@ class _HomePageState extends State<HomePage> {
       });
     }
   }
-
   void _createCharacter() async {
     final String characterName = _characterNameController.text;
 
@@ -423,7 +560,7 @@ class _HomePageState extends State<HomePage> {
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Erreur de sélection'),
-          content: const Text('Veuillez sélectionner un univers.'),
+          content: const Text('Veuillez sélectionner un jeu.'),
           actions: [
             TextButton(
               child: const Text('OK'),
@@ -526,5 +663,4 @@ class _HomePageState extends State<HomePage> {
     // Réinitialiser le champ de texte du nom du personnage
     _characterNameController.clear();
   }
-
 }
