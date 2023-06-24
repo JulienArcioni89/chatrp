@@ -130,8 +130,7 @@ router.post('/:characterId', authenticateToken, async (req, res) => {
 // Générer la description du personnage en utilisant OpenAI
 function sendMessageToOpenAI(data, message) {
     return new Promise(async (resolve, reject) => {
-        const promptMessage = `Dans le cadre d'un jeu de rôle tu va incarner le personnage de ${data.character} issu du jeu ${data.game}. ${message}`;
-        console.log('Prompt envoyé à OpenAI :', promptMessage);
+        const promptMessage = `Dans le cadre d'un jeu de rôle tu va incarner à partir de maintenant le personnage de ${data.character} issu du jeu ${data.game}. ${message}`;
         try {
             const response = await openai.createCompletion({
                 model: 'text-ada-001',
