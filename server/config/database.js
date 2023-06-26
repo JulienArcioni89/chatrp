@@ -1,10 +1,13 @@
+require('dotenv').config({path: '../.env'});
+
 const mysql = require('mysql');
+const password_BDD = process.env.PASSWORD_BDD_ROOT;
 
 // Créer une connexion à la base de données avec un utilisateur possédant tous les droits
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'root',
+    password: password_BDD,
     database: 'openai',
     port: 8889
 });
