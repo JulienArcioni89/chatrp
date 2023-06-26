@@ -81,13 +81,17 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Créer mon Compte"),
+        title: const Text("Créer mon compte"),
         backgroundColor: Color(0xFFD9B998),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            Container(
+              margin: EdgeInsets.only(top: 40.0), // Ajoute une marge supérieure de 32.0
+              child: Image.asset('assets/logo_conv.png'),
+            ),
             TextField(
               controller: _firstnameController,
               decoration: InputDecoration(
@@ -161,7 +165,7 @@ class _RegisterPageState extends State<RegisterPage> {
               controller: _passwordController,
               obscureText: true,
               decoration: InputDecoration(
-                labelText: 'Mot de Passe',
+                labelText: 'Mot de passe',
                 labelStyle: TextStyle(color: _isPasswordFocused ? Colors.black : Colors.grey),
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Color(0xFFD9B998), width: 1.0),

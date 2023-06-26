@@ -6,6 +6,7 @@ import 'package:mydigitalgpt/conversation.dart';
 import 'package:mydigitalgpt/addGame.dart';
 import 'package:mydigitalgpt/addCharacter.dart';
 import 'package:mydigitalgpt/startConversation.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class HomePage extends StatefulWidget {
   final String token;
@@ -59,7 +60,7 @@ class _HomePageState extends State<HomePage> {
       //définir les variables de couleur :
       backgroundColor: Color(0xFFF5F4F4),
       appBar: AppBar(
-        title: const Text('ChatRP'),
+        title: const Text('Tableau de bord'),
         backgroundColor: Color(0xFFD9B998),
       ),
       body: SingleChildScrollView(
@@ -68,11 +69,13 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-
-              Center(
-                child: Text(
-                  'Bonjour $username !',
-                  style: TextStyle(fontSize: 28, color: Color(0xFF36453B)),
+              Container(
+                margin: EdgeInsets.only(top: 50.0),
+                child: Center(
+                  child: Text(
+                    'Bonjour $username !',
+                    style: TextStyle(fontSize: 28, color: Color(0xFF36453B)),
+                  ),
                 ),
               ),
               SizedBox(height: 20),
@@ -85,22 +88,32 @@ class _HomePageState extends State<HomePage> {
                   );
                 },
                 child: Card(
+                  margin: EdgeInsets.only(top: 60.0, bottom: 30.0),
                   color: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    side: BorderSide(color: Color(0xFFD9B998), width: 2.0),
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
                       children: [
-                        Icon(
-                          Icons.gamepad, // Icône de manette de jeu
-                          size: 50,
-                          color: Colors.black,
+                        Container(
+                          margin: EdgeInsets.all(6.0),
+                          child: SvgPicture.asset(
+                            'assets/game.svg',
+                            height: 40,
+                          ),
                         ),
-                        Text(
-                          'Ajouter un jeu',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                        Container(
+                          margin: EdgeInsets.all(6.0),
+                          child: Text(
+                            'Ajouter un jeu',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
                           ),
                         ),
                       ],
@@ -118,22 +131,32 @@ class _HomePageState extends State<HomePage> {
                   );
                 },
                 child: Card(
+                  margin: EdgeInsets.only(bottom: 30.0),
                   color: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    side: BorderSide(color: Color(0xFFD9B998), width: 2.0),
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
                       children: [
-                        Icon(
-                          Icons.person_add, // Icône de manette de jeu
-                          size: 50,
-                          color: Colors.black,
+                        Container(
+                          margin: EdgeInsets.all(6.0),
+                          child: SvgPicture.asset(
+                            'assets/person.svg',
+                            height: 40,
+                          ),
                         ),
-                        Text(
-                          'Ajouter un personnage',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                        Container(
+                          margin: EdgeInsets.all(6.0),
+                          child: Text(
+                            'Ajouter un personnage',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
                           ),
                         ),
                       ],
@@ -150,22 +173,32 @@ class _HomePageState extends State<HomePage> {
                   );
                 },
                 child: Card(
+                  margin: EdgeInsets.only(bottom: 30.0),
                   color: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    side: BorderSide(color: Color(0xFFD9B998), width: 2.0),
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
                       children: [
-                        Icon(
-                          Icons.chat_bubble,
-                          size: 50,
-                          color: Colors.black,
+                        Container(
+                          margin: EdgeInsets.all(6.0),
+                          child: SvgPicture.asset(
+                            'assets/chat.svg',
+                            height: 40,
+                          ),
                         ),
-                        Text(
-                          'Commencer une conversation',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                        Container(
+                          margin: EdgeInsets.all(6.0),
+                          child: Text(
+                            'Commencer une conversation',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
                           ),
                         ),
                       ],

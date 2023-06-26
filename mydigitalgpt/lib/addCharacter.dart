@@ -36,7 +36,7 @@ class _AddCharacterPageState extends State<AddCharacterPage> {
       //définir les variables de couleur :
       backgroundColor: Color(0xFFF5F4F4),
       appBar: AppBar(
-        title: const Text('ChatRP'),
+        title: const Text('Ajouter un personnage'),
         backgroundColor: Color(0xFFD9B998),
       ),
       body: SingleChildScrollView(

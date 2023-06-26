@@ -93,7 +93,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("ChatRP | Connexion"),
+        title: const Text("Connexion"),
         centerTitle: true,
         backgroundColor: Color(0xFFD9B998),
       ),
@@ -104,7 +104,7 @@ class _LoginPageState extends State<LoginPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Container(
-                margin: EdgeInsets.only(top: 40.0), // Ajoute une marge supérieure de 32.0
+                margin: EdgeInsets.only(top: 40.0),
                 child: Image.asset('assets/logo_conv.png'),
               ),
               const SizedBox(height: 16.0),
@@ -151,7 +151,7 @@ class _LoginPageState extends State<LoginPage> {
                   focusNode: _passwordFocusNode,
                   obscureText: true,
                   decoration: InputDecoration(
-                    labelText: 'Mot de Passe',
+                    labelText: 'Mot de passe',
                     border: InputBorder.none,
                     labelStyle: TextStyle(
                       color: _isUsernameFocused ? Colors.black : Colors.black,

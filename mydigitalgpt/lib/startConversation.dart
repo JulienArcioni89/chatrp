@@ -34,7 +34,7 @@ class _StartConversationPageState extends State<StartConversationPage> {
       //définir les variables de couleur :
       backgroundColor: Color(0xFFF5F4F4),
       appBar: AppBar(
-        title: const Text('ChatRP'),
+        title: const Text('Démarrer une conversation'),
         backgroundColor: Color(0xFFD9B998),
       ),
       body: SingleChildScrollView(
