@@ -7,8 +7,6 @@ router.post('/', authenticateToken, (req, res) => {
     const { nom } = req.body;
     const userId = req.user.id; // Récupérer l'ID de l'utilisateur depuis le token décodé
 
-    console.log('L\'API a recu :',nom, userId);
-
     // Vérifier si un jeu avec le même nom existe déjà
     const checkQuery = 'SELECT id FROM games WHERE nom = ?';
     connection.query(checkQuery, [nom], (checkError, checkResults) => {
