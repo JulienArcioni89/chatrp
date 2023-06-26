@@ -1,10 +1,5 @@
 # ChatRP
 
-## Informations générales
-
-*API Fonctionnelle - Front en cours de développement*\
-*En conséquence, seul le répertoire `server` est fonctionnel*
-
 ## Description
 
 ChatRP est une application de chat avec une IA qui permet aux utilisateurs de créer des personnages, les associer à un univers et de converser avec eux.
