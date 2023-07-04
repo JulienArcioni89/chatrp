@@ -67,6 +67,7 @@ flutter:
     - assets/chat.svg
     - assets/game.svg
     - assets/person.svg
+    - assets/wave2.svg
 
 
   # The following line ensures that the Material Icons font is

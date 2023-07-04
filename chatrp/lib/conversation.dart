@@ -17,7 +17,6 @@ class _ConversationPageState extends State<ConversationPage> {
   List<Map<String, dynamic>> _messages = [];
   bool _isTyping = false;
 
-
   void _sendMessage() async {
     String message = _messageController.text;
     _messageController.clear();
@@ -26,10 +25,7 @@ class _ConversationPageState extends State<ConversationPage> {
       _isTyping = true; // Activer l'indicateur de saisie
     });
 
-
-    final Map<String, dynamic> requestData = {
-      'message': message
-    };
+    final Map<String, dynamic> requestData = {'message': message};
 
     final String requestBody = jsonEncode(requestData);
 
@@ -38,15 +34,16 @@ class _ConversationPageState extends State<ConversationPage> {
       'Authorization': '${widget.token}',
     };
 
-    final url = Uri.parse('http://localhost:3000/chat/${widget.conversationId}');
+    final url =
+        Uri.parse('http://localhost:3000/chat/${widget.conversationId}');
 
     final response = await http.post(
       url,
       headers: requestHeaders,
       body: requestBody,
     );
-    print('Contenu du body envoyé : ${requestBody}');
-    print('Contenu de la reponse : ${response.body}');
+    // print('Contenu du body envoyé : ${requestBody}');
+    // print('Contenu de la reponse : ${response.body}');
 
     if (response.statusCode == 200) {
       dynamic responseData = jsonDecode(response.body);
@@ -58,7 +55,6 @@ class _ConversationPageState extends State<ConversationPage> {
         _messages.add({'message': sentMessage, 'is_sent_by_human': true});
         _messages.add({'message': receivedMessage, 'is_sent_by_human': false});
       });
-
     }
     // Après avoir envoyé le message, désactivez l'indicateur de saisie
     setState(() {
@@ -69,8 +65,10 @@ class _ConversationPageState extends State<ConversationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFFF5F4F4),
       appBar: AppBar(
-        title: Text('Conversation'),
+        title: const Text('Conversation'),
+        backgroundColor: Color(0xFFD9B998),
       ),
       body: Column(
         children: [
@@ -81,35 +79,43 @@ class _ConversationPageState extends State<ConversationPage> {
               itemCount: _messages.length,
               itemBuilder: (context, index) {
                 if (_messages.isEmpty) {
-                  return Container(); // Retourne un conteneur vide si la liste est vide
+                  return Container(); // Return an empty container if the list is empty
                 }
 
                 Map<String, dynamic> message =
-                _messages[_messages.length - index - 1];
+                    _messages[_messages.length - index - 1];
                 bool isSentByHuman = message.containsKey('is_sent_by_human')
                     ? message['is_sent_by_human']
                     : false;
 
-                return Align(
-                  alignment: isSentByHuman ? Alignment.centerRight : Alignment.centerLeft,
-                  child: Container(
-                    padding: EdgeInsets.all(8.0),
-                    margin: EdgeInsets.symmetric(vertical: 4.0),
-                    decoration: BoxDecoration(
-                      color: isSentByHuman ? Colors.blue : Colors.grey[300],
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                    child: Text(
-                      message['message'],
-                      style: TextStyle(
-                        color: isSentByHuman ? Colors.white : Colors.black,
+                return Row(
+                  mainAxisAlignment: isSentByHuman
+                      ? MainAxisAlignment.end
+                      : MainAxisAlignment.start,
+                  children: [
+                    Container(
+                      constraints: BoxConstraints(
+                          maxWidth: MediaQuery.of(context).size.width * 0.7),
+                      // Limit the width of the bubble
+                      padding: EdgeInsets.all(8.0),
+                      margin: EdgeInsets.symmetric(vertical: 10.0),
+                      decoration: BoxDecoration(
+                        color: isSentByHuman
+                            ? Color(0xFFE66745)
+                            : Colors.grey[300],
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: Text(
+                        message['message'],
+                        style: TextStyle(
+                          color: isSentByHuman ? Colors.white : Colors.black,
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 );
               },
             ),
-
           ),
           Container(
             padding: EdgeInsets.all(16.0),
@@ -121,7 +127,7 @@ class _ConversationPageState extends State<ConversationPage> {
                     decoration: InputDecoration(
                       hintText: 'Votre message...',
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(24.0),
+                        borderRadius: BorderRadius.circular(20.0),
                       ),
                     ),
                   ),

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="495.923" height="83.185" viewBox="0 0 495.923 83.185">
+  <defs>
+    <clipPath id="clip-path">
+      <rect width="495.923" height="83.185" fill="none"/>
+    </clipPath>
+  </defs>
+  <g id="Groupe_défilant_1" data-name="Groupe défilant 1" clip-path="url(#clip-path)" style="isolation: isolate">
+    <path id="wave" d="M0,131.185l10.332-9.2c10.332-9.057,31-27.655,51.659-38.572a108.469,108.469,0,0,1,61.99-12.846c20.663,1.722,41.327,9.3,61.99,7.336,20.663-1.825,41.327-12.846,61.99-18.356s41.327-5.51,61.99-11.021S351.279,32,371.943,41.2c20.663,9.057,41.327,38.675,61.99,40.4s41.327-23.763,51.659-36.747L495.923,32v99.185H0Z" transform="translate(0 -32)" fill="#d9b998"/>
+  </g>
+</svg>

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:chatrp/homePage.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -16,13 +17,11 @@ class _LoginPageState extends State<LoginPage> {
   final FocusNode _usernameFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
 
-
   String? _token;
 
   Future<void> _login() async {
     final String username = _usernameController.text;
     final String password = _passwordController.text;
-
 
     // Création du corps de la requête en utilisant les données d'authentification
     final String body = json.encode({
@@ -97,98 +96,115 @@ class _LoginPageState extends State<LoginPage> {
         centerTitle: true,
         backgroundColor: Color(0xFFD9B998),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Container(
-                margin: EdgeInsets.only(top: 40.0),
-                child: Image.asset('assets/logo_conv.png'),
-              ),
-              const SizedBox(height: 16.0),
-              AnimatedContainer(
-                duration: Duration(milliseconds: 200),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: _isUsernameFocused ? Color(0xFFD9B998) : Colors.grey,
-                    width: 1.0,
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(top: 40.0),
+                    child: Image.asset('assets/logo_conv.png'),
                   ),
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                child: TextFormField(
-                  controller: _usernameController,
-                  focusNode: _usernameFocusNode,
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    border: InputBorder.none,
-                    labelStyle: TextStyle(
-                      color: _isUsernameFocused ? Colors.black : Colors.black,
+                  const SizedBox(height: 16.0),
+                  AnimatedContainer(
+                    duration: Duration(milliseconds: 200),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: _isUsernameFocused
+                            ? Color(0xFFD9B998)
+                            : Colors.grey,
+                        width: 1.0,
+                      ),
+                      borderRadius: BorderRadius.circular(8.0),
                     ),
-                    contentPadding: EdgeInsets.only(left: 8.0),
-                  ),
-                  onTap: () {
-                    setState(() {
-                      _isUsernameFocused = true;
-                      _isPasswordFocused = false;
-                    });
-                  },
-                ),
-              ),
-              const SizedBox(height: 16.0),
-              AnimatedContainer(
-                duration: Duration(milliseconds: 200),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: _isPasswordFocused ? Color(0xFFD9B998) : Colors.grey,
-                    width: 1.0,
-                  ),
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                child: TextFormField(
-                  controller: _passwordController,
-                  focusNode: _passwordFocusNode,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: 'Mot de passe',
-                    border: InputBorder.none,
-                    labelStyle: TextStyle(
-                      color: _isUsernameFocused ? Colors.black : Colors.black,
+                    child: TextFormField(
+                      controller: _usernameController,
+                      focusNode: _usernameFocusNode,
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        border: InputBorder.none,
+                        labelStyle: TextStyle(
+                          color:
+                              _isUsernameFocused ? Colors.black : Colors.black,
+                        ),
+                        contentPadding: EdgeInsets.only(left: 8.0),
+                      ),
+                      onTap: () {
+                        setState(() {
+                          _isUsernameFocused = true;
+                          _isPasswordFocused = false;
+                        });
+                      },
                     ),
-                    contentPadding: EdgeInsets.only(left: 8.0),
                   ),
-                  onTap: () {
-                    setState(() {
-                      _isUsernameFocused = false;
-                      _isPasswordFocused = true;
-                    });
-                  },
-                ),
+                  const SizedBox(height: 16.0),
+                  AnimatedContainer(
+                    duration: Duration(milliseconds: 200),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: _isPasswordFocused
+                            ? Color(0xFFD9B998)
+                            : Colors.grey,
+                        width: 1.0,
+                      ),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: TextFormField(
+                      controller: _passwordController,
+                      focusNode: _passwordFocusNode,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        labelText: 'Mot de passe',
+                        border: InputBorder.none,
+                        labelStyle: TextStyle(
+                          color:
+                              _isUsernameFocused ? Colors.black : Colors.black,
+                        ),
+                        contentPadding: EdgeInsets.only(left: 8.0),
+                      ),
+                      onTap: () {
+                        setState(() {
+                          _isUsernameFocused = false;
+                          _isPasswordFocused = true;
+                        });
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 16.0),
+                  ElevatedButton(
+                    onPressed: _login,
+                    style: ElevatedButton.styleFrom(
+                      primary: Color(0xFFE66745),
+                      onPrimary: Color(0xFFFFFFFF),
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    ),
+                    child: const Text('Se connecter'),
+                  ),
+                  const SizedBox(height: 8.0),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/register');
+                    },
+                    child: const Text(
+                      'Créer un compte',
+                      style: TextStyle(fontSize: 14, color: Color(0xFF36453B)),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: _login,
-                style: ElevatedButton.styleFrom(
-                  primary: Color(0xFFE66745),
-                  onPrimary: Color(0xFFFFFFFF),
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                ),
-                child: const Text('Se connecter'),
-              ),
-              const SizedBox(height: 8.0),
-              TextButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/register');
-                },
-                child: const Text(
-                  'Créer un compte',
-                  style: TextStyle(fontSize: 14, color: Color(0xFF36453B)),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: SvgPicture.asset(
+              'assets/wave2.svg',
+              fit: BoxFit.contain,
+            ),
+          ),
+        ],
       ),
     );
   }
