@@ -2,30 +2,32 @@ require('dotenv').config({path: '../.env'});
 
 const express = require('express');
 const router = express.Router();
-const connection = require('../config/database');
 const {Configuration, OpenAIApi} = require('openai');
+const chatModel = require('../models/chatModel'); // modèle pour les opérations de chat
+const characterModel = require('../models/characterModel'); // modèle pour les opérations des personnages
+const gameModel = require('../models/gameModel'); // modèle pour les opérations des jeux
+const {authenticateToken} = require('../middleware/auth.middleware');
 
 const apiKey = process.env.OPENAI_API_KEY;
 const configuration = new Configuration({
     apiKey: apiKey,
 });
 const openai = new OpenAIApi(configuration);
-const {authenticateToken} = require('../middleware/auth.middleware');
 
 // Supprimer une conversation par son ID
-router.delete('/:id', authenticateToken, (req, res) => {
+router.delete('/:id', authenticateToken, async (req, res) => {
     const conversationId = req.params.id;
-    const deleteQuery = 'DELETE FROM conversation WHERE id = ?';
-    connection.query(deleteQuery, [conversationId], (error, results) => {
-        if (error) {
-            console.error('Erreur lors de la suppression de la conversation :', error);
-            res.status(500).json({error: 'Erreur lors de la suppression de la conversation'});
-        } else if (results.affectedRows === 0) {
-            res.status(404).json({error: 'Conversation non trouvée'});
-        } else {
-            res.json({message: 'Conversation supprimée avec succès'});
+
+    try {
+        const deleteResult = await chatModel.deleteConversationById(conversationId);
+        if (deleteResult.affectedRows === 0) {
+            return res.status(404).json({ error: 'Conversation non trouvée' });
         }
-    });
+        res.json({ message: 'Conversation supprimée avec succès' });
+    } catch (error) {
+        console.error('Erreur lors de la suppression de la conversation :', error);
+        res.status(500).json({ error: 'Erreur lors de la suppression de la conversation' });
+    }
 });
 
 // Envoyer un message à OpenAI et enregistrer la conversation dans la base de données
@@ -33,104 +35,64 @@ router.post('/:characterId', authenticateToken, async (req, res) => {
     const userId = req.user.id;
     const characterId = req.params.characterId;
 
-    // Récupérer l'id du jeu associé au personnage
-    const queryGameID = 'SELECT game_id FROM characters WHERE id = ?';
-    connection.query(queryGameID, [characterId], async (error, results) => {
-        if (error) {
-            console.error('Erreur lors de la récupération du jeu associé au personnage :', error);
-            res.status(500).json({error: 'Erreur lors de la récupération du jeu associé au personnage'});
-        } else if (results.length === 0) {
-            res.status(404).json({error: 'Personnage non trouvé'});
-        } else {
-            const gameId = results[0].game_id;
-
-            // Récupérer le nom du jeu depuis son id
-            const queryGameName = 'SELECT nom FROM games WHERE id = ?';
-            connection.query(queryGameName, [gameId], async (error, results) => {
-                if (error) {
-                    console.error('Erreur lors de la récupération du nom du jeu :', error);
-                    res.status(500).json({error: 'Erreur lors de la récupération du nom du jeu'});
-                } else if (results.length === 0) {
-                    res.status(404).json({error: 'Jeu non trouvé'});
-                } else {
-                    const gameName = results[0].nom;
-
-                    // Récupérer le nom du personnage depuis son id
-                    const queryName = 'SELECT name FROM characters WHERE id = ?';
-                    connection.query(queryName, [characterId], async (error, results) => {
-                        if (error) {
-                            console.error('Erreur lors de la récupération du nom du personnage :', error);
-                            res.status(500).json({error: 'Erreur lors de la récupération du nom du personnage'});
-                        } else if (results.length === 0) {
-                            res.status(404).json({error: 'Personnage non trouvé'});
-                        } else {
-                            const characterName = results[0].name;
-
-                            // Créer le tableau contenant le nom du personnage et le nom du jeu
-                            const data = {
-                                character: characterName,
-                                game: gameName
-                            };
-
-                            let message = req.body.message; // Message à envoyer à OpenAI
-                            console.log("Message envoyé a open AI après le prompt : ", message);
-
-                            // Vérifier si une conversation existe déjà entre l'utilisateur et le personnage
-                            const query = 'SELECT * FROM conversation WHERE user_id = ? AND character_id = ?';
-                            connection.query(query, [userId, characterId], async (error, results) => {
-                                if (error) {
-                                    console.error('Erreur lors de la recherche de la conversation :', error);
-                                    res.status(500).json({error: 'Erreur lors de la recherche de la conversation'});
-                                } else {
-                                    if (results.length === 0) {
-                                        console.log("Nouvelle conversation créée");
-                                        createConversationAndSaveMessage(userId, characterId, message)
-                                            .then(async (conversationId) => {
-                                                console.log("Conversation créée avec l'id : ", conversationId);
-                                                const IDconversation = conversationId;
-                                                const responseOpenAI = await sendMessageToOpenAI(data, message);
-                                                saveMessageInConversation(IDconversation, responseOpenAI, 'AI');
-                                                res.status(200).json({response: responseOpenAI});
-                                            });
-
-                                    } else {
-                                        console.log("La conversation existe déjà");
-                                        const conversationId = results[0].id;
-                                        const historyOfConversation = await getConversationHistory(conversationId);
-
-                                        // historyOfConversation.push("Maintenant reprenons la conversation : ")
-                                        historyOfConversation.push(message);
-
-                                        saveMessageInConversation(conversationId, message, 'user');
-
-                                        const response2OpenAI = await sendMessageToOpenAI(data, historyOfConversation);
-                                        saveMessageInConversation(conversationId, response2OpenAI, 'AI');
-/*                                        message = "user : " + message;
-                                        historyOfConversation.push(message);
-                                        console.log("Historique de la conversation avec le message ajouté : ", historyOfConversation);
-
-                                        saveMessageInConversation(conversationId, message, 'user');
-                                        const historySendToOpenAi = await sendMessageToOpenAI(data, historyOfConversation); // Envoyer l'historique de la conversation à OpenAI
-                                        console.log("Réponse d'OpenAI : ", historySendToOpenAi);
-                                        saveMessageInConversation(conversationId, historySendToOpenAi, 'AI'); // Enregistrer la réponse d'OpenAI dans la base de données
-                                        res.status(200).json({response: historySendToOpenAi});*/
-                                        res.status(200).json({response: response2OpenAI});
-                                    }
-                                }
-                            });
-                        }
-                    });
-                }
-            });
+    try {
+        const characterResults = await characterModel.getCharacterById(characterId);
+        if (characterResults.length === 0) {
+            return res.status(404).json({ error: 'Personnage non trouvé' });
         }
-    });
-});
 
+        const characterName = characterResults[0].name;
+        const gameId = characterResults[0].game_id;
+
+        const gameResults = await gameModel.getGameById(gameId);
+        if (gameResults.length === 0) {
+            return res.status(404).json({ error: 'Jeu non trouvé' });
+        }
+
+        const gameName = gameResults[0].nom;
+        const data = {
+            character: characterName,
+            game: gameName
+        };
+
+        let message = req.body.message; // Message à envoyer à OpenAI
+        console.log("Message envoyé a open AI après le prompt : ", message);
+
+        const existingConversationResults = await chatModel.getConversationByUserIdAndCharacterId(userId, characterId);
+
+        if (existingConversationResults.length === 0) {
+            console.log("Nouvelle conversation créée");
+            const conversationId = await chatModel.createConversationAndSaveMessage(userId, characterId, message);
+            console.log("Conversation créée avec l'id : ", conversationId);
+
+            const responseOpenAI = await sendMessageToOpenAI(data, message);
+            await chatModel.saveMessageInConversation(conversationId, responseOpenAI, 'AI');
+
+            res.status(200).json({response: responseOpenAI});
+        } else {
+            console.log("La conversation existe déjà");
+            const conversationId = existingConversationResults[0].id;
+
+            const historyOfConversation = await chatModel.getConversationHistory(conversationId);
+            historyOfConversation.push(message);
+
+            await chatModel.saveMessageInConversation(conversationId, message, 'user');
+
+            const response2OpenAI = await sendMessageToOpenAI(data, historyOfConversation);
+            await chatModel.saveMessageInConversation(conversationId, response2OpenAI, 'AI');
+
+            res.status(200).json({response: response2OpenAI});
+        }
+    } catch (error) {
+        console.error('Erreur lors de l\'envoi du message :', error);
+        res.status(500).json({ error: 'Erreur lors de l\'envoi du message' });
+    }
+});
 
 // Générer la description du personnage en utilisant OpenAI
 function sendMessageToOpenAI(data, message) {
     return new Promise(async (resolve, reject) => {
-        const promptMessage = `Dans le cadre d'un jeu de rôle tu va incarner à partir de maintenant le personnage de ${data.character} issu du jeu ${data.game}. ${message}`;
+        const promptMessage = `Tu es ${data.character} du jeu vidéo ${data.game}. Tu doit répondre uniquement en imitant ce personnage et ne pas sortir de ce personnage sous aucun raison`;
         try {
             const response = await openai.createCompletion({
                 model: 'text-ada-001',
@@ -147,65 +109,6 @@ function sendMessageToOpenAI(data, message) {
         } catch (error) {
             reject(error);
         }
-    });
-}
-
-
-function createConversationAndSaveMessage(userId, characterId, message) {
-    return new Promise((resolve, reject) => {
-        if (!message) {
-            console.error('Le message est vide');
-            // reject(new Error('Le message est vide'));
-            return;
-        }
-
-        const query = 'INSERT INTO conversation (user_id, character_id) VALUES (?, ?)';
-        connection.query(query, [userId, characterId], (error, results) => {
-            if (error) {
-                console.error('Erreur lors de la création de la conversation :', error);
-                reject(error);
-            } else {
-                const conversationId = results.insertId;
-                saveMessageInConversation(conversationId, message, 'user');
-                resolve(conversationId);
-            }
-        });
-    });
-}
-
-// Fonction pour enregistrer un message dans une conversation existante dans la BDD
-function saveMessageInConversation(conversationId, message, sender) {
-    if (!message) {
-        console.error('OpenAI a répondu un message vide');
-        return;
-    }
-    const query = 'INSERT INTO chat (id_conv, messages, sender) VALUES (?, ?, ?)';
-    connection.query(query, [conversationId, message, sender], (error) => {
-        if (error) {
-            console.error('Erreur lors de l\'enregistrement du message :', error);
-        } else {
-            console.log('Message enregistré avec succès dans la BDD');
-        }
-    });
-}
-
-// Récupérer l'historique complet d'une conversation avec son ID
-async function getConversationHistory(conversationId) {
-    return new Promise((resolve, reject) => {
-        const query = 'SELECT * FROM chat WHERE id_conv = ?';
-        connection.query(query, [conversationId], (error, results) => {
-            if (error) {
-                console.error('Erreur lors de la récupération de l\'historique de la conversation :', error);
-                reject(error);
-            } else {
-                const history = results.map((message) => {
-                    const sender = message.sender;
-                    const content = `${sender}: ${message.messages}`;
-                    return content;
-                });
-                resolve(history);
-            }
-        });
     });
 }
 

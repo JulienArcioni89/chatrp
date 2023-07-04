@@ -2,36 +2,39 @@ require('dotenv').config({path: '../.env'});
 
 const express = require('express');
 const router = express.Router();
-const connection = require('../config/database');
 const {Configuration, OpenAIApi} = require('openai');
+const {authenticateToken} = require('../middleware/auth.middleware');
+const convModel = require('../models/convModel'); // Importer le modèle
 
 const apiKey = process.env.OPENAI_API_KEY;
 const configuration = new Configuration({
     apiKey: apiKey,
 });
 const openai = new OpenAIApi(configuration);
-const {authenticateToken} = require('../middleware/auth.middleware');
 
 
 //route pour récupérer une conversation en fonction de son id
-router.get('/:id', authenticateToken, (req, res) => {
+router.get('/:id', authenticateToken, async (req, res) => {
     const id = req.params.id;
-    const sql = "SELECT * FROM chat WHERE id_conv = ?";
-    connection.query(sql, [id], (err, result) => {
-        if (err) throw err;
+    try {
+        const result = await convModel.getConversationById(id);
         res.json(result);
-    });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({error: 'Erreur lors de la récupération de la conversation'});
+    }
 });
 
 
 //route pour récupérer toutes les conversations
-router.get('/', authenticateToken, (req, res) => {
-    const id = req.params.id;
-    const sql = "SELECT * FROM conversation";
-    connection.query(sql, (err, result) => {
-        if (err) throw err;
+router.get('/', authenticateToken, async (req, res) => {
+    try {
+        const result = await convModel.getAllConversations();
         res.json(result);
-    });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({error: 'Erreur lors de la récupération des conversations'});
+    }
 });
 
 module.exports = router;

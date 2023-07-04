@@ -1,98 +1,86 @@
 const express = require('express');
 const router = express.Router();
-const connection = require('../config/database');
+const gameModel = require('../models/gameModel');
 const {authenticateToken} = require("../middleware/auth.middleware");
 
-router.post('/', authenticateToken, (req, res) => {
+router.post('/', authenticateToken, async (req, res) => {
     const { nom } = req.body;
-    const userId = req.user.id; // Récupérer l'ID de l'utilisateur depuis le token décodé
+    const userId = req.user.id;
 
-    // Vérifier si un jeu avec le même nom existe déjà
-    const checkQuery = 'SELECT id FROM games WHERE nom = ?';
-    connection.query(checkQuery, [nom], (checkError, checkResults) => {
-        if (checkError) {
-            console.error('Erreur lors de la vérification du jeu existant :', checkError);
-            res.status(500).json({ error: 'Erreur lors de la vérification du jeu existant' });
-        } else if (checkResults.length > 0) {
+    try {
+        // Check if game already exists
+        const existingGame = await gameModel.getGameById(nom);
+        if(existingGame.length > 0) {
             res.status(409).json({ error: 'Un jeu avec le même nom existe déjà' });
         } else {
-            // Aucun jeu avec le même nom trouvé, procéder à la création du jeu
-            const insertQuery = 'INSERT INTO games (nom, user_id) VALUES (?, ?)';
-            connection.query(insertQuery, [nom, userId], (insertError, insertResults) => {
-                if (insertError) {
-                    console.error('Erreur lors de la création du jeu : ', insertError);
-                    res.status(500).json({ error: 'Erreur lors de la création du jeu' });
-                } else {
-                    res.status(201).json({ message: 'Jeu créé avec succès' });
-                }
-            });
+            // If no existing game, create a new one
+            await gameModel.createGame(nom, userId);
+            res.status(201).json({ message: 'Jeu créé avec succès' });
         }
-    });
+    } catch (error) {
+        console.error('Erreur lors de la création du jeu : ', error);
+        res.status(500).json({ error: 'Erreur lors de la création du jeu' });
+    }
 });
 
-// Supprimer un jeu par son ID
-router.delete('/:id', authenticateToken, (req, res) => {
+router.delete('/:id', authenticateToken, async (req, res) => {
     const gameId = req.params.id;
-    const query = 'DELETE FROM games WHERE id = ?';
-    connection.query(query, [gameId], (error, results) => {
-        if (error) {
-            console.error('Erreur lors de la suppression du jeu :', error);
-            res.status(500).json({ error: 'Erreur lors de la suppression du jeu' });
-        } else if (results.affectedRows === 0) {
+    try {
+        const result = await gameModel.deleteGameById(gameId);
+        if (result.affectedRows === 0) {
             res.status(404).json({ error: 'Jeu non trouvé' });
         } else {
             res.json({ message: 'Jeu supprimé avec succès' });
         }
-    });
+    } catch (error) {
+        console.error('Erreur lors de la suppression du jeu :', error);
+        res.status(500).json({ error: 'Erreur lors de la suppression du jeu' });
+    }
 });
 
-
-// Récupérer un jeu par son ID
-router.get('/:id', authenticateToken, (req, res) => {
+router.get('/:id', authenticateToken, async (req, res) => {
     const gameId = req.params.id;
-    const query = 'SELECT * FROM games WHERE id = ?';
-    connection.query(query, [gameId], (error, results) => {
-        if (error) {
-            console.error('Erreur lors de la récupération du jeu :', error);
-            res.status(500).json({error: 'Erreur lors de la récupération du jeu'});
-        } else if (results.length === 0) {
+    try {
+        const game = await gameModel.getGameById(gameId);
+        if (game.length === 0) {
             res.status(404).json({error: 'Jeu non trouvé'});
         } else {
-            res.json(results[0]);
+            res.json(game[0]);
         }
-    });
+    } catch (error) {
+        console.error('Erreur lors de la récupération du jeu :', error);
+        res.status(500).json({error: 'Erreur lors de la récupération du jeu'});
+    }
 });
 
-// Récupérer tous les jeux
-router.get('/', authenticateToken, (req, res) => {
-    const query = 'SELECT * FROM games';
-    connection.query(query, (error, results) => {
-        if (error) {
-            console.error('Erreur lors de la récupération des jeux :', error);
-            res.status(500).json({error: 'Erreur lors de la récupération des jeux'});
-        } else if (results.length === 0) {
+router.get('/', authenticateToken, async (req, res) => {
+    try {
+        const games = await gameModel.getAllGames();
+        if (games.length === 0) {
             res.status(404).json({error: 'Aucun jeu trouvé'});
         } else {
-            res.json(results);
+            res.json(games);
         }
-    });
+    } catch (error) {
+        console.error('Erreur lors de la récupération des jeux :', error);
+        res.status(500).json({error: 'Erreur lors de la récupération des jeux'});
+    }
 });
 
-// Renommer un jeu
-router.put('/:id', authenticateToken, (req, res) => {
+router.put('/:id', authenticateToken, async (req, res) => {
     const gameId = req.params.id;
     const {nom} = req.body;
-    const query = 'UPDATE games SET nom = ? WHERE id = ?';
-    connection.query(query, [nom, gameId], (error, results) => {
-        if (error) {
-            console.error('Erreur lors du renommage du jeu :', error);
-            res.status(500).json({error: 'Erreur lors du renommage du jeu'});
-        } else if (results.affectedRows === 0) {
+    try {
+        const result = await gameModel.updateGameName(gameId, nom);
+        if (result.affectedRows === 0) {
             res.status(404).json({error: 'Jeu non trouvé'});
         } else {
             res.json({message: 'Jeu renommé avec succès'});
         }
-    });
+    } catch (error) {
+        console.error('Erreur lors du renommage du jeu :', error);
+        res.status(500).json({error: 'Erreur lors du renommage du jeu'});
+    }
 });
 
 module.exports = router;
