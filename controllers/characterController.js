@@ -34,6 +34,7 @@ router.post('/game/:id', authenticateToken, async (req, res) => {
         const description = await generateCharacterDescription(nom, gameName);
 
         await characterModel.updateCharacterDescription(description, newCharacter.insertId);
+
         res.status(201).json({ message: 'Personnage créé avec succès' });
     } catch (error) {
         console.error('Erreur lors de la création du personnage :', error);
@@ -115,7 +116,7 @@ router.put('/game/:game_id/characters/:character_id', authenticateToken, async (
 
 // Générer la description du personnage en utilisant OpenAI
 async function generateCharacterDescription(characterName, gameName) {
-    const prompt = `Fait moi une courte description du personnage qui s'appelle ${characterName} et qui fait partie du jeu ${gameName}.`;
+    const prompt = `Fait moi une courte description de ${characterName} du jeu ${gameName}.`;
 
     const response = await openai.createCompletion({
         model: "text-davinci-003",

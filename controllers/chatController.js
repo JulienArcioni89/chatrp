@@ -56,7 +56,6 @@ router.post('/:characterId', authenticateToken, async (req, res) => {
         };
 
         let message = req.body.message; // Message à envoyer à OpenAI
-        console.log("Message envoyé a open AI après le prompt : ", message);
 
         const existingConversationResults = await chatModel.getConversationByUserIdAndCharacterId(userId, characterId);
 
